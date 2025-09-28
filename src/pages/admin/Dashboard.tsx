@@ -16,137 +16,103 @@ import {
   Loader2,
 } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
-import { useGetSystemStats } from "../../hooks/useAdmin";
+import { useGetSystemStats, useGetUsers, useGetContentForModeration, useGetAnalyticsTrends } from "../../hooks/useAdmin";
 
 export const AdminDashboard: React.FC = () => {
   const { user } = useAuthStore();
 
   // API Queries
   const { data: systemStats, isLoading: statsLoading } = useGetSystemStats();
+  const { data: users, isLoading: usersLoading } = useGetUsers({ limit: 10 });
+  const { data: contentModeration, isLoading: moderationLoading } = useGetContentForModeration({
+    content_type: "resumes",
+    flagged_only: false,
+    limit: 5
+  });
+  const { data: analyticsTrends, isLoading: trendsLoading } = useGetAnalyticsTrends({ days: 7 });
 
   const stats = [
     {
       icon: Users,
       label: "Total Users",
       value: statsLoading ? "..." : (systemStats?.total_users || 0).toString(),
-      change: "+12 this week",
+      change: `+${systemStats?.new_users_this_week || 0} this week`,
       color: "blue",
     },
     {
       icon: Briefcase,
       label: "Job Postings",
-      value: statsLoading ? "..." : (systemStats?.total_jobs || 0).toString(),
-      change: `${systemStats?.active_jobs || 0} active`,
+      value: statsLoading ? "..." : (systemStats?.total_job_postings || 0).toString(),
+      change: `${systemStats?.active_job_postings || 0} active`,
       color: "green",
     },
     {
       icon: FileText,
       label: "Resumes",
       value: statsLoading ? "..." : (systemStats?.total_resumes || 0).toString(),
-      change: "Analysis in progress",
+      change: `${systemStats?.analyzed_resumes || 0} analyzed`,
       color: "purple",
     },
     {
       icon: Target,
       label: "Applications",
       value: statsLoading ? "..." : (systemStats?.total_applications || 0).toString(),
-      change: "Active monitoring",
+      change: `${systemStats?.pending_applications || 0} pending`,
       color: "orange",
     },
   ];
 
   const systemHealth = [
     {
-      metric: "System Uptime",
-      value: "99.9%",
+      metric: "Total Matches",
+      value: systemStats?.total_matches?.toString() || "0",
       status: "healthy",
       icon: Activity,
     },
     {
-      metric: "Database Performance",
-      value: "Good",
-      status: "healthy",
-      icon: Database,
-    },
-    {
-      metric: "API Response Time",
-      value: "120ms",
+      metric: "High Score Matches",
+      value: systemStats?.high_score_matches?.toString() || "0",
       status: "healthy",
       icon: TrendingUp,
     },
     {
-      metric: "Storage Usage",
-      value: "67%",
-      status: "warning",
+      metric: "Voice Analyses",
+      value: `${systemStats?.completed_voice_analyses || 0}/${systemStats?.total_voice_analyses || 0}`,
+      status: systemStats?.completed_voice_analyses === systemStats?.total_voice_analyses ? "healthy" : "warning",
       icon: Database,
     },
-  ];
-
-  const recentActivities = [
     {
-      id: 1,
-      type: "user_registration",
-      description: "New user registered",
-      user: "john.doe@example.com",
-      timestamp: "2 minutes ago",
-      icon: Users,
-      color: "blue",
-    },
-    {
-      id: 2,
-      type: "job_posting",
-      description: "New job posted",
-      user: "TechCorp HR",
-      timestamp: "15 minutes ago",
-      icon: Briefcase,
-      color: "green",
-    },
-    {
-      id: 3,
-      type: "resume_upload",
-      description: "Resume uploaded and analyzed",
-      user: "jane.smith@example.com",
-      timestamp: "32 minutes ago",
-      icon: FileText,
-      color: "purple",
-    },
-    {
-      id: 4,
-      type: "application",
-      description: "Job application submitted",
-      user: "alex.wilson@example.com",
-      timestamp: "1 hour ago",
+      metric: "Match Score Avg",
+      value: `${systemStats?.average_match_score || 0}%`,
+      status: (systemStats?.average_match_score || 0) >= 75 ? "healthy" : "warning",
       icon: Target,
-      color: "orange",
     },
   ];
 
-  const contentModerationQueue = [
-    {
-      id: 1,
-      type: "Resume",
-      content: "Senior Developer Resume",
-      status: "pending",
-      flagged_by: "Auto-mod",
-      priority: "low",
-    },
-    {
-      id: 2,
-      type: "Job Posting",
-      content: "Remote Software Engineer Position",
-      status: "reviewed",
-      flagged_by: "User Report",
-      priority: "medium",
-    },
-    {
-      id: 3,
-      type: "Voice Analysis",
-      content: "Communication Assessment",
-      status: "pending",
-      flagged_by: "Quality Check",
-      priority: "high",
-    },
-  ];
+  // Generate recent activities from real user data
+  const recentActivities = users?.slice(0, 4).map((userResponse, index) => ({
+    id: userResponse.user.id,
+    type: userResponse.user.user_type === 'employee' ? 'employee_activity' : 'employer_activity',
+    description: userResponse.user.user_type === 'employee'
+      ? `Employee: ${userResponse.activity_summary.resume_count || 0} resumes, ${userResponse.activity_summary.application_count || 0} applications`
+      : `Employer: ${userResponse.activity_summary.job_posting_count || 0} jobs, ${userResponse.activity_summary.received_applications || 0} applications`,
+    user: `${userResponse.user.first_name} ${userResponse.user.last_name} (${userResponse.user.email})`,
+    timestamp: new Date(userResponse.user.created_at).toLocaleDateString(),
+    icon: userResponse.user.user_type === 'employee' ? Users : Briefcase,
+    color: userResponse.user.user_type === 'employee' ? 'blue' : 'green',
+    status: userResponse.account_status
+  })) || [];
+
+  // Generate content moderation queue from real data
+  const contentModerationQueue = contentModeration?.items?.slice(0, 3).map(item => ({
+    id: item.id,
+    type: contentModeration.content_type,
+    content: item.title || `${contentModeration.content_type} #${item.id}`,
+    status: item.status || 'pending',
+    flagged_by: 'System',
+    priority: item.status === 'failed' ? 'high' : 'medium',
+    created_at: item.created_at
+  })) || [];
 
   return (
     <div className="space-y-6">
@@ -267,30 +233,47 @@ export const AdminDashboard: React.FC = () => {
             <Eye className="w-5 h-5 text-gray-400" />
           </div>
           <div className="space-y-4">
-            {recentActivities.map((activity) => (
-              <div key={activity.id} className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg transition-colors">
-                <div className={`p-2 rounded-lg ${
-                  activity.color === 'blue' ? 'bg-blue-100' :
-                  activity.color === 'green' ? 'bg-green-100' :
-                  activity.color === 'purple' ? 'bg-purple-100' :
-                  'bg-orange-100'
-                }`}>
-                  <activity.icon className={`w-4 h-4 ${
-                    activity.color === 'blue' ? 'text-blue-600' :
-                    activity.color === 'green' ? 'text-green-600' :
-                    activity.color === 'purple' ? 'text-purple-600' :
-                    'text-orange-600'
-                  }`} />
-                </div>
-                <div className="flex-1">
-                  <p className="font-medium text-gray-800 text-sm">{activity.description}</p>
-                  <p className="text-sm text-gray-600">{activity.user}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs text-gray-500">{activity.timestamp}</p>
-                </div>
+            {usersLoading ? (
+              <div className="flex items-center justify-center p-8">
+                <Loader2 className="animate-spin w-6 h-6 text-gray-400" />
+                <span className="ml-2 text-gray-500">Loading activities...</span>
               </div>
-            ))}
+            ) : recentActivities.length > 0 ? (
+              recentActivities.map((activity) => (
+                <div key={activity.id} className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className={`p-2 rounded-lg ${
+                    activity.color === 'blue' ? 'bg-blue-100' :
+                    activity.color === 'green' ? 'bg-green-100' :
+                    activity.color === 'purple' ? 'bg-purple-100' :
+                    'bg-orange-100'
+                  }`}>
+                    <activity.icon className={`w-4 h-4 ${
+                      activity.color === 'blue' ? 'text-blue-600' :
+                      activity.color === 'green' ? 'text-green-600' :
+                      activity.color === 'purple' ? 'text-purple-600' :
+                      'text-orange-600'
+                    }`} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-800 text-sm">{activity.description}</p>
+                    <p className="text-sm text-gray-600">{activity.user}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-gray-500">Joined: {activity.timestamp}</p>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      activity.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                    }`}>
+                      {activity.status}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center p-8 text-gray-500">
+                <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                <p>No recent user activity</p>
+              </div>
+            )}
           </div>
         </motion.div>
       </div>
@@ -309,32 +292,47 @@ export const AdminDashboard: React.FC = () => {
             <AlertTriangle className="w-5 h-5 text-gray-400" />
           </div>
           <div className="space-y-4">
-            {contentModerationQueue.map((item) => (
-              <div key={item.id} className="border border-gray-200 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium text-gray-800 text-sm">{item.type}</span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    item.priority === 'high' ? 'bg-red-100 text-red-700' :
-                    item.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                    'bg-gray-100 text-gray-700'
-                  }`}>
-                    {item.priority}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600 mb-2">{item.content}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500">Flagged by: {item.flagged_by}</span>
-                  <div className="flex gap-2">
-                    <button className="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">
-                      Approve
-                    </button>
-                    <button className="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">
-                      Reject
-                    </button>
+            {moderationLoading ? (
+              <div className="flex items-center justify-center p-8">
+                <Loader2 className="animate-spin w-6 h-6 text-gray-400" />
+                <span className="ml-2 text-gray-500">Loading content...</span>
+              </div>
+            ) : contentModerationQueue.length > 0 ? (
+              contentModerationQueue.map((item) => (
+                <div key={item.id} className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium text-gray-800 text-sm capitalize">{item.type}</span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      item.priority === 'high' ? 'bg-red-100 text-red-700' :
+                      item.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                      'bg-gray-100 text-gray-700'
+                    }`}>
+                      {item.priority}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-2">{item.content}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-500">
+                      Status: {item.status} | Created: {new Date(item.created_at).toLocaleDateString()}
+                    </span>
+                    <div className="flex gap-2">
+                      <button className="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">
+                        Approve
+                      </button>
+                      <button className="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">
+                        Reject
+                      </button>
+                    </div>
                   </div>
                 </div>
+              ))
+            ) : (
+              <div className="text-center p-8 text-gray-500">
+                <AlertTriangle className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                <p>No content requiring moderation</p>
+                <p className="text-xs mt-1">All content is currently clean</p>
               </div>
-            ))}
+            )}
           </div>
         </motion.div>
 
@@ -349,7 +347,7 @@ export const AdminDashboard: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-800">Analytics Overview</h2>
             <BarChart3 className="w-5 h-5 text-gray-400" />
           </div>
-          {statsLoading ? (
+          {statsLoading || trendsLoading ? (
             <div className="flex items-center justify-center p-8">
               <Loader2 className="animate-spin w-6 h-6 text-gray-400" />
               <span className="ml-2 text-gray-500">Loading analytics...</span>
@@ -359,19 +357,25 @@ export const AdminDashboard: React.FC = () => {
               <div className="p-4 border border-gray-200 rounded-lg">
                 <p className="text-sm text-gray-600 mb-2">Average Match Score</p>
                 <p className="text-2xl font-bold text-gray-800">
-                  85%
+                  {systemStats?.average_match_score?.toFixed(1) || 0}%
                 </p>
               </div>
               <div className="p-4 border border-gray-200 rounded-lg">
                 <p className="text-sm text-gray-600 mb-2">Applications per Job</p>
                 <p className="text-2xl font-bold text-gray-800">
-                  12.3
+                  {systemStats?.average_applications_per_job?.toFixed(1) || 0}
                 </p>
               </div>
               <div className="p-4 border border-gray-200 rounded-lg">
                 <p className="text-sm text-gray-600 mb-2">High Score Matches</p>
                 <p className="text-2xl font-bold text-gray-800">
-                  347
+                  {systemStats?.high_score_matches || 0}
+                </p>
+              </div>
+              <div className="p-4 border border-gray-200 rounded-lg">
+                <p className="text-sm text-gray-600 mb-2">Weekly Trend</p>
+                <p className="text-sm text-gray-800">
+                  {systemStats?.new_resumes_this_week || 0} resumes, {systemStats?.new_applications_this_week || 0} applications
                 </p>
               </div>
             </div>

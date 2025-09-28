@@ -18,23 +18,53 @@ import {
   Loader2,
 } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
-import { useGetResumes, useGetApplications, useGetJobRecommendations } from "../../hooks/useEmployee";
+import { useQuery } from '@tanstack/react-query';
+import { employeeService } from '../../services/employeeService';
 import { Link } from "react-router-dom";
 
 export const EmployeeDashboard: React.FC = () => {
   const { user } = useAuthStore();
 
   // API Queries
-  const { data: resumes, isLoading: resumesLoading } = useGetResumes();
-  const { data: applications, isLoading: applicationsLoading } = useGetApplications();
-  const { data: recommendedJobs, isLoading: jobsLoading } = useGetJobRecommendations();
+  const { data: resumes, isLoading: resumesLoading } = useQuery({
+    queryKey: ['resumes'],
+    queryFn: employeeService.getResumes
+  });
+
+  const { data: applications, isLoading: applicationsLoading } = useQuery({
+    queryKey: ['applications'],
+    queryFn: () => employeeService.getApplications()
+  });
+
+  const { data: recommendedJobs, isLoading: jobsLoading } = useQuery({
+    queryKey: ['job-recommendations'],
+    queryFn: () => employeeService.getJobRecommendations()
+  });
+
+  const { data: skillsAnalysis, isLoading: skillsLoading } = useQuery({
+    queryKey: ['skills-analysis'],
+    queryFn: employeeService.getSkillsAnalysis
+  });
+
+  const { data: voiceAnalyses, isLoading: voiceLoading } = useQuery({
+    queryKey: ['voice-analyses'],
+    queryFn: employeeService.getVoiceAnalyses
+  });
+
+  // Calculate dynamic stats
+  const analyzedResumes = resumes?.filter(r => r.is_analyzed) || [];
+  const pendingApplications = applications?.filter(a => a.status === 'pending') || [];
+  const averageMatchScore = recommendedJobs?.length ?
+    Math.round(recommendedJobs.reduce((sum, job) => sum + job.match_score, 0) / recommendedJobs.length) : 0;
+  const latestVoiceScore = voiceAnalyses?.length ?
+    voiceAnalyses[0]?.analysis_results?.overall_communication_score || 0 : 0;
 
   const stats = [
     {
       icon: FileText,
-      label: "Total Resumes",
-      value: resumesLoading ? "..." : (resumes?.length || 0).toString(),
-      change: "+1 this month",
+      label: "Analyzed Resumes",
+      value: resumesLoading ? "..." : analyzedResumes.length.toString(),
+      change: `${resumes?.length || 0} total uploaded`,
       color: "blue",
     },
     {
@@ -43,40 +73,61 @@ export const EmployeeDashboard: React.FC = () => {
       value: applicationsLoading
         ? "..."
         : (applications?.length || 0).toString(),
-      change: "+5 this week",
+      change: `${pendingApplications.length} pending review`,
       color: "green",
     },
     {
-      icon: Eye,
-      label: "Profile Views",
-      value: "156",
-      change: "+12% this week",
+      icon: TrendingUp,
+      label: "Avg Match Score",
+      value: jobsLoading ? "..." : `${averageMatchScore}%`,
+      change: `From ${recommendedJobs?.length || 0} recommendations`,
       color: "purple",
     },
     {
       icon: Award,
-      label: "Skill Score",
-      value: "85%",
-      change: "+8% this month",
+      label: "Voice Score",
+      value: voiceLoading ? "..." : `${Math.round(latestVoiceScore)}%`,
+      change: voiceAnalyses?.length ? "Latest analysis" : "No voice analysis",
       color: "orange",
     },
   ];
 
-  const upcomingEvents = [
-    {
-      id: 1,
-      title: "Interview with TechCorp",
-      time: "Today 2:00 PM",
-      type: "interview",
-    },
-    { id: 2, title: "Career Fair", time: "Tomorrow 10:00 AM", type: "event" },
-    {
-      id: 3,
-      title: "Skills Assessment",
-      time: "Friday 3:00 PM",
-      type: "assessment",
-    },
-  ];
+  // Generate upcoming events from real data
+  const upcomingEvents = [];
+
+  // Add recent applications with pending status
+  const recentApplications = applications?.filter(app =>
+    app.status === 'reviewing' || app.status === 'shortlisted'
+  ).slice(0, 2) || [];
+
+  recentApplications.forEach((app, index) => {
+    upcomingEvents.push({
+      id: `app-${app.id}`,
+      title: `Application Review - Job #${app.job_id}`,
+      time: `Applied ${new Date(app.applied_at).toLocaleDateString()}`,
+      type: app.status === 'shortlisted' ? 'interview' : 'review'
+    });
+  });
+
+  // Add suggestion for resume upload if no analyzed resumes
+  if (analyzedResumes.length === 0) {
+    upcomingEvents.push({
+      id: 'upload-resume',
+      title: 'Upload and analyze your resume',
+      time: 'Get started today',
+      type: 'action'
+    });
+  }
+
+  // Add suggestion for voice analysis if none exists
+  if (!voiceAnalyses?.length) {
+    upcomingEvents.push({
+      id: 'voice-analysis',
+      title: 'Complete voice analysis',
+      time: 'Improve your profile',
+      type: 'action'
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -99,7 +150,11 @@ export const EmployeeDashboard: React.FC = () => {
             <div className="bg-white/10 backdrop-blur-lg rounded-lg p-4">
               <TrendingUp className="w-8 h-8 text-white mb-2" />
               <p className="text-sm">Profile Strength</p>
-              <p className="text-2xl font-bold">85%</p>
+              <p className="text-2xl font-bold">
+                {skillsLoading ? "..." :
+                  skillsAnalysis?.industry_skill_coverage?.coverage_percentage ||
+                  (analyzedResumes.length > 0 ? "75" : "25")}%
+              </p>
             </div>
           </div>
         </div>
@@ -176,14 +231,22 @@ export const EmployeeDashboard: React.FC = () => {
                   </div>
                   <div className="flex-1">
                     <h3 className="font-medium text-gray-800">
-                      Application #{app.id}
+                      {app.job?.title || `Job Application #${app.id}`}
                     </h3>
-                    <p className="text-sm text-gray-600">Job ID: {app.job_id}</p>
+                    <p className="text-sm text-gray-600">
+                      {app.employer?.company_name || `Job ID: ${app.job_id}`}
+                    </p>
                     <div className="flex items-center gap-4 mt-1">
                       <span className="flex items-center gap-1 text-xs text-gray-500">
                         <Clock className="w-3 h-3" />
                         {new Date(app.applied_at).toLocaleDateString()}
                       </span>
+                      {app.job?.location && (
+                        <span className="flex items-center gap-1 text-xs text-gray-500">
+                          <MapPin className="w-3 h-3" />
+                          {app.job.location}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="text-right">
@@ -231,25 +294,35 @@ export const EmployeeDashboard: React.FC = () => {
             <Calendar className="w-5 h-5 text-gray-400" />
           </div>
           <div className="space-y-4">
-            {upcomingEvents.map((event) => (
-              <div key={event.id} className="flex gap-3">
-                <div
-                  className={`w-2 h-2 rounded-full mt-2 ${
-                    event.type === "interview"
-                      ? "bg-green-500"
-                      : event.type === "event"
-                      ? "bg-blue-500"
-                      : "bg-orange-500"
-                  }`}
-                />
-                <div>
-                  <p className="font-medium text-gray-800 text-sm">
-                    {event.title}
-                  </p>
-                  <p className="text-xs text-gray-500">{event.time}</p>
+            {upcomingEvents.length > 0 ? (
+              upcomingEvents.map((event) => (
+                <div key={event.id} className="flex gap-3">
+                  <div
+                    className={`w-2 h-2 rounded-full mt-2 ${
+                      event.type === "interview"
+                        ? "bg-green-500"
+                        : event.type === "review"
+                        ? "bg-blue-500"
+                        : event.type === "action"
+                        ? "bg-purple-500"
+                        : "bg-orange-500"
+                    }`}
+                  />
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-800 text-sm">
+                      {event.title}
+                    </p>
+                    <p className="text-xs text-gray-500">{event.time}</p>
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className="text-center p-4 text-gray-500">
+                <Calendar className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                <p className="text-sm">No upcoming events</p>
+                <p className="text-xs">Apply to jobs to see updates here</p>
               </div>
-            ))}
+            )}
           </div>
           <button className="w-full mt-4 py-2 text-blue-600 hover:text-blue-700 text-sm font-medium border border-blue-200 hover:border-blue-300 rounded-lg transition-colors">
             View Calendar
@@ -297,7 +370,7 @@ export const EmployeeDashboard: React.FC = () => {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <h3 className="font-medium text-gray-800">{jobRec.job.title || 'Job Title'}</h3>
-                    <p className="text-sm text-gray-600">{jobRec.job.company || 'Company'}</p>
+                    <p className="text-sm text-gray-600">{jobRec.job.department || 'Department'}</p>
                   </div>
                   <div className="text-right">
                     <div className="flex items-center gap-1">
@@ -311,24 +384,37 @@ export const EmployeeDashboard: React.FC = () => {
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-1 text-sm text-gray-600">
                     <MapPin className="w-4 h-4" />
-                    {jobRec.job.location || 'Location'}
+                    {jobRec.job.location || 'Location not specified'}
                   </div>
                   {jobRec.job.salary_min && jobRec.job.salary_max && (
                     <div className="text-sm font-medium text-green-600">
                       ${jobRec.job.salary_min?.toLocaleString()} - $
                       {jobRec.job.salary_max?.toLocaleString()}
+                      {jobRec.job.currency ? ` ${jobRec.job.currency}` : ''}
                     </div>
                   )}
+                  <div className="flex flex-wrap gap-1">
+                    {jobRec.job.job_type && (
+                      <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
+                        {jobRec.job.job_type}
+                      </span>
+                    )}
+                    {jobRec.job.experience_level && (
+                      <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                        {jobRec.job.experience_level}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500">
-                    {new Date(jobRec.created_at).toLocaleDateString()}
+                    Match found: {new Date(jobRec.created_at).toLocaleDateString()}
                   </span>
                   <Link
                     to={`/employee/jobs/${jobRec.job.id}`}
                     className="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
                   >
-                    Apply
+                    View & Apply
                   </Link>
                 </div>
               </div>

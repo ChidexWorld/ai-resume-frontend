@@ -8,8 +8,9 @@ import {
   Loader2,
   X
 } from 'lucide-react';
-import { useUploadResume } from '../../hooks/useEmployee';
-import type { Resume } from '../../types';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { employeeService, type Resume } from '../../services/employeeService';
+import toast from 'react-hot-toast';
 
 interface ResumeUploadProps {
   onUploadSuccess?: (resume: Resume) => void;
@@ -22,7 +23,22 @@ export const ResumeUpload: React.FC<ResumeUploadProps> = ({
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
-  const uploadMutation = useUploadResume();
+  const queryClient = useQueryClient();
+
+  const uploadMutation = useMutation({
+    mutationFn: employeeService.uploadResume,
+    onSuccess: (resume) => {
+      toast.success('Resume uploaded successfully!');
+      queryClient.invalidateQueries({ queryKey: ['resumes'] });
+      if (onUploadSuccess) {
+        onUploadSuccess(resume);
+      }
+    },
+    onError: (error: any) => {
+      const message = error?.response?.data?.detail || 'Failed to upload resume';
+      toast.error(message);
+    }
+  });
 
   const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
   const maxSize = 25 * 1024 * 1024; // 25MB
@@ -71,15 +87,7 @@ export const ResumeUpload: React.FC<ResumeUploadProps> = ({
 
   const handleUpload = async () => {
     if (!selectedFile) return;
-
-    try {
-      const response = await uploadMutation.mutateAsync(selectedFile);
-      const resume = response.data as Resume;
-      onUploadSuccess?.(resume);
-      setSelectedFile(null);
-    } catch (error) {
-      console.error('Upload failed:', error);
-    }
+    uploadMutation.mutate(selectedFile);
   };
 
   const handleRemoveFile = () => {

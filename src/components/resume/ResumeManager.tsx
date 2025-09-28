@@ -12,18 +12,38 @@ import {
   Clock,
   Loader2
 } from 'lucide-react';
-import { useGetResumes, useDeleteResume } from '../../hooks/useEmployee';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { employeeService, type Resume } from '../../services/employeeService';
 import ResumeUpload from './ResumeUpload';
 import ResumeAnalysis from './ResumeAnalysis';
-import type { Resume } from '../../types';
+import toast from 'react-hot-toast';
 
 export const ResumeManager: React.FC = () => {
   const [showUpload, setShowUpload] = useState(false);
   const [selectedResume, setSelectedResume] = useState<Resume | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'analysis'>('list');
 
-  const { data: resumes, isLoading, error, refetch } = useGetResumes();
-  const deleteMutation = useDeleteResume();
+  const queryClient = useQueryClient();
+
+  const { data: resumes, isLoading, error } = useQuery({
+    queryKey: ['resumes'],
+    queryFn: employeeService.getResumes
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: employeeService.deleteResume,
+    onSuccess: () => {
+      toast.success('Resume deleted successfully!');
+      queryClient.invalidateQueries({ queryKey: ['resumes'] });
+    },
+    onError: () => {
+      toast.error('Failed to delete resume');
+    }
+  });
+
+  const refetch = () => {
+    queryClient.invalidateQueries({ queryKey: ['resumes'] });
+  };
 
   const handleUploadSuccess = (resume: Resume) => {
     setShowUpload(false);

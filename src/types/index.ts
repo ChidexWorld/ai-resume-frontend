@@ -131,7 +131,7 @@ export interface VoiceAnalysis {
   analyzed_at?: string;
 }
 
-// Job Application types
+// Job Application types based on backend ApplicationResponse schema
 export interface JobApplication {
   id: number;
   employee_id: number;

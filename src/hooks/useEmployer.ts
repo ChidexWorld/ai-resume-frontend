@@ -29,6 +29,7 @@ interface Job {
   expires_at?: string;
   created_at: string;
   updated_at: string;
+  applications_count?: number;
 }
 
 interface JobApplication {
@@ -53,29 +54,48 @@ interface JobApplication {
   };
 }
 
-interface Candidate {
-  id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone?: string;
-  skills: string[];
-  experience_level: string;
-  experience_years: number;
-  location?: string;
-  communication_score?: number;
-  match_score?: number;
+interface CandidateSearchResponse {
+  employee: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone?: string;
+  };
+  resume_analysis?: {
+    id: number;
+    employee_id: number;
+    skills?: string[];
+    experience_level?: string;
+    total_experience_years?: number;
+    contact_info?: {
+      location?: string;
+      [key: string]: any;
+    };
+    [key: string]: any;
+  };
+  voice_analysis?: {
+    id: number;
+    overall_communication_score?: number;
+    [key: string]: any;
+  };
+  match_summary?: {
+    skills_match?: string[];
+    experience_years?: number;
+    communication_score?: number;
+    ai_match_score?: number;
+    ai_matching_details?: any;
+  };
 }
 
 interface DashboardStats {
-  total_jobs: number;
-  active_jobs: number;
+  company_name: string;
+  total_job_postings: number;
+  active_job_postings: number;
   total_applications: number;
   pending_applications: number;
-  interviews_scheduled: number;
-  applications_this_month: number;
-  top_skills_demanded: string[];
-  average_match_score: number;
+  recent_applications_30d: number;
+  average_applications_per_job: number;
 }
 
 interface ApiError {
@@ -259,7 +279,7 @@ export const useSearchCandidates = () => {
     }) =>
       employerAPI
         .searchCandidates(params)
-        .then((res) => res.data as Candidate[]),
+        .then((res) => res.data as CandidateSearchResponse[]),
     onError: (error: ApiError) => {
       const message =
         error.response?.data?.message ||
@@ -267,6 +287,18 @@ export const useSearchCandidates = () => {
         "Failed to search candidates";
       toast.error(message);
     },
+  });
+};
+
+// Get top candidates for dashboard
+export const useGetTopCandidates = (limit: number = 3) => {
+  return useQuery({
+    queryKey: ["top-candidates", limit],
+    queryFn: () =>
+      employerAPI
+        .searchCandidates({ limit, min_communication_score: 80 })
+        .then((res) => res.data as CandidateSearchResponse[]),
+    staleTime: 300000, // 5 minutes
   });
 };
 

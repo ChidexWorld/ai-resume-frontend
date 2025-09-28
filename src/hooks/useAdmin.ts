@@ -2,80 +2,87 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { adminAPI } from "../services/api";
 
-// Types for Admin API responses
+// Types for Admin API responses based on backend SystemStatsResponse schema
 interface SystemStats {
   total_users: number;
   active_users: number;
-  total_employers: number;
   total_employees: number;
-  total_jobs: number;
-  active_jobs: number;
-  total_applications: number;
+  total_employers: number;
+  total_job_postings: number;
+  active_job_postings: number;
   total_resumes: number;
+  analyzed_resumes: number;
   total_voice_analyses: number;
-  system_storage_used: string;
-  database_size: string;
-  avg_response_time: number;
-  uptime: string;
+  completed_voice_analyses: number;
+  total_applications: number;
+  pending_applications: number;
+  total_matches: number;
+  high_score_matches: number;
+  new_users_this_week: number;
+  new_resumes_this_week: number;
+  new_applications_this_week: number;
+  average_match_score: number;
+  average_applications_per_job: number;
 }
 
-interface User {
-  id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  user_type: "employee" | "employer";
-  phone?: string;
-  company_name?: string;
-  company_website?: string;
-  company_size?: string;
-  is_active: boolean;
-  is_verified: boolean;
-  created_at: string;
-  updated_at: string;
-  last_login?: string;
+interface UserManagementResponse {
+  user: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    user_type: "employee" | "employer";
+    phone?: string;
+    company_name?: string;
+    company_website?: string;
+    company_size?: string;
+    is_active: boolean;
+    is_verified: boolean;
+    created_at: string;
+    updated_at: string;
+  };
+  activity_summary: Record<string, any>;
+  last_login: string;
+  account_status: string;
 }
 
-interface ContentModerationItem {
-  id: number;
-  content_type: "resumes" | "jobs" | "applications";
-  content_id: number;
-  user_id: number;
-  content_preview: string;
-  flagged_reason?: string;
-  is_flagged: boolean;
-  reviewed: boolean;
-  created_at: string;
-  updated_at: string;
+interface ContentModerationResponse {
+  content_type: string;
+  total_items: number;
+  flagged_only: boolean;
+  items: Array<{
+    id: number;
+    title?: string;
+    department?: string;
+    status: string;
+    created_at: string;
+    [key: string]: any;
+  }>;
 }
 
 interface AnalyticsTrends {
-  daily_registrations: Array<{
-    date: string;
-    employees: number;
-    employers: number;
-    total: number;
-  }>;
-  daily_job_postings: Array<{
-    date: string;
-    count: number;
-  }>;
-  daily_applications: Array<{
-    date: string;
-    count: number;
-  }>;
-  popular_skills: Array<{
-    skill: string;
-    count: number;
-  }>;
-  location_distribution: Array<{
-    location: string;
-    count: number;
-  }>;
-  user_activity: Array<{
-    date: string;
-    active_users: number;
-  }>;
+  period_days: number;
+  start_date: string;
+  trends: {
+    daily_registrations: Array<{
+      date: string;
+      count: number;
+    }>;
+    daily_job_postings: Array<{
+      date: string;
+      count: number;
+    }>;
+    daily_applications: Array<{
+      date: string;
+      count: number;
+    }>;
+    daily_matches: Array<{
+      date: string;
+      total_matches: number;
+      high_score_matches: number;
+      success_rate: number;
+    }>;
+  };
 }
 
 interface ApiError {
@@ -106,7 +113,7 @@ export const useGetUsers = (params?: {
 }) => {
   return useQuery({
     queryKey: ["admin-users", params],
-    queryFn: () => adminAPI.getUsers(params).then((res) => res.data as User[]),
+    queryFn: () => adminAPI.getUsers(params).then((res) => res.data as UserManagementResponse[]),
   });
 };
 
@@ -145,7 +152,7 @@ export const useGetContentForModeration = (params: {
     queryFn: () =>
       adminAPI
         .getContentForModeration(params)
-        .then((res) => res.data as ContentModerationItem[]),
+        .then((res) => res.data as ContentModerationResponse),
   });
 };
 

@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import {
   Briefcase,
   Users,
-  Eye,
   TrendingUp,
   Calendar,
   Star,
@@ -20,9 +19,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
-import { useGetJobs } from "../../hooks/useEmployer";
-import { useGetJobApplications } from "../../hooks/useEmployer";
-import { useSearchCandidates, useGetDashboardStats } from "../../hooks/useEmployer";
+import { useGetJobs, useGetDashboardStats, useGetTopCandidates } from "../../hooks/useEmployer";
 import { Link } from "react-router-dom";
 
 export const EmployerDashboard: React.FC = () => {
@@ -31,34 +28,22 @@ export const EmployerDashboard: React.FC = () => {
   // API Queries
   const { data: jobs, isLoading: jobsLoading } = useGetJobs();
   const { data: stats, isLoading: statsLoading } = useGetDashboardStats();
-
-  // Note: useSearchCandidates is a mutation hook, so we'll use mock data for now
-  const candidatesLoading = false;
-  const candidates = null;
+  const { data: candidates, isLoading: candidatesLoading } = useGetTopCandidates(3);
 
   const dashboardStats = [
     {
       icon: Briefcase,
       label: "Active Jobs",
-      value: jobsLoading
-        ? "..."
-        : (jobs?.filter((job) => job.status === "active").length || 0).toString(),
-      change: "+3 this month",
+      value: statsLoading ? "..." : (stats?.active_job_postings || 0).toString(),
+      change: `${stats?.total_job_postings || 0} total postings`,
       color: "blue",
     },
     {
       icon: Users,
       label: "Total Applications",
       value: statsLoading ? "..." : (stats?.total_applications || 0).toString(),
-      change: `+${stats?.applications_this_month || 0} this month`,
+      change: `${stats?.recent_applications_30d || 0} in last 30 days`,
       color: "green",
-    },
-    {
-      icon: Eye,
-      label: "Profile Views",
-      value: "1,429",
-      change: "+18% this week",
-      color: "purple",
     },
     {
       icon: Target,
@@ -67,125 +52,45 @@ export const EmployerDashboard: React.FC = () => {
       change: "Need attention",
       color: "orange",
     },
-  ];
-
-  // Mock data for demonstration - replace with real data from API
-  const recentJobs = jobs?.slice(0, 3) || [
     {
-      id: 1,
-      title: "Senior React Developer",
-      department: "Engineering",
-      location: "San Francisco, CA",
-      created_at: "2024-01-15T10:00:00Z",
-      applications_count: 34,
-      status: "active",
-      job_type: "full-time",
-    },
-    {
-      id: 2,
-      title: "Product Manager",
-      department: "Product",
-      location: "Remote",
-      created_at: "2024-01-12T10:00:00Z",
-      applications_count: 28,
-      status: "active",
-      job_type: "full-time",
-    },
-    {
-      id: 3,
-      title: "UI/UX Designer",
-      department: "Design",
-      location: "New York, NY",
-      created_at: "2024-01-08T10:00:00Z",
-      applications_count: 45,
-      status: "paused",
-      job_type: "contract",
+      icon: TrendingUp,
+      label: "Avg Apps/Job",
+      value: statsLoading ? "..." : (stats?.average_applications_per_job || 0).toString(),
+      change: "Performance metric",
+      color: "purple",
     },
   ];
 
-  const topCandidates = candidates?.slice(0, 3) || [
-    {
-      id: 1,
-      employee: {
-        first_name: "Alex",
-        last_name: "Johnson",
-        email: "alex.johnson@example.com"
-      },
-      resume_analysis: {
-        total_experience_years: 5,
-        contact_info: { location: "San Francisco, CA" },
-        skills: ["React", "TypeScript", "Node.js"]
-      },
-      match_summary: {
-        experience_years: 5,
-        communication_score: 95
-      }
-    },
-    {
-      id: 2,
-      employee: {
-        first_name: "Sarah",
-        last_name: "Chen",
-        email: "sarah.chen@example.com"
-      },
-      resume_analysis: {
-        total_experience_years: 7,
-        contact_info: { location: "Seattle, WA" },
-        skills: ["Strategy", "Analytics", "Leadership"]
-      },
-      match_summary: {
-        experience_years: 7,
-        communication_score: 92
-      }
-    },
-    {
-      id: 3,
-      employee: {
-        first_name: "Mike",
-        last_name: "Rodriguez",
-        email: "mike.rodriguez@example.com"
-      },
-      resume_analysis: {
-        total_experience_years: 4,
-        contact_info: { location: "Austin, TX" },
-        skills: ["Figma", "Prototyping", "User Research"]
-      },
-      match_summary: {
-        experience_years: 4,
-        communication_score: 88
-      }
-    },
-  ];
+  // Get recent jobs from API data
+  const recentJobs = jobs?.slice(0, 3) || [];
 
-  const upcomingInterviews = [
-    {
-      id: 1,
-      candidate: "Alex Johnson",
-      position: "React Developer",
-      time: "Today 2:00 PM",
-      type: "Technical",
-    },
-    {
-      id: 2,
-      candidate: "Sarah Chen",
-      position: "Product Manager",
-      time: "Tomorrow 10:00 AM",
-      type: "Final",
-    },
-    {
-      id: 3,
-      candidate: "Mike Rodriguez",
-      position: "UI/UX Designer",
-      time: "Friday 3:00 PM",
-      type: "Portfolio",
-    },
-  ];
+  // Get top candidates from API data
+  const topCandidates = candidates || [];
+
+  // Placeholder for interviews until backend implements this feature
+  const upcomingInterviews: any[] = [];
 
   const analyticsData = [
-    { label: "Application Rate", value: "+23%", trend: "up" },
-    { label: "Time to Hire", value: "14 days", trend: "down" },
-    { label: "Offer Acceptance", value: "87%", trend: "up" },
-    { label: "Avg Match Score", value: stats?.average_match_score?.toString() || "N/A", trend: "up" },
+    {
+      label: "Active Jobs",
+      value: (stats?.active_job_postings || 0).toString(),
+      trend: "neutral"
+    },
+    {
+      label: "Total Jobs",
+      value: (stats?.total_job_postings || 0).toString(),
+      trend: "neutral"
+    },
+    {
+      label: "Recent Apps",
+      value: (stats?.recent_applications_30d || 0).toString(),
+      trend: "neutral"
+    },
+    {
+      label: "Avg Apps/Job",
+      value: (stats?.average_applications_per_job || 0).toString(),
+      trend: "neutral"
+    },
   ];
 
   return (
@@ -205,6 +110,22 @@ export const EmployerDashboard: React.FC = () => {
               {user?.company_name && `Managing talent at ${user.company_name}. `}
               Let's find the perfect candidates today!
             </p>
+            <div className="flex gap-3 mt-4">
+              <Link
+                to="/employer/candidates"
+                className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors backdrop-blur-sm"
+              >
+                <Users className="w-4 h-4" />
+                View All Candidates
+              </Link>
+              <Link
+                to="/employer/search"
+                className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors backdrop-blur-sm"
+              >
+                <Search className="w-4 h-4" />
+                Talent Search
+              </Link>
+            </div>
           </div>
           <div className="hidden md:block">
             <div className="bg-white/10 backdrop-blur-lg rounded-lg p-4">
@@ -305,14 +226,16 @@ export const EmployerDashboard: React.FC = () => {
                   </div>
                   <div className="text-right">
                     <p className="font-medium text-gray-800">
-                      {job.applications_count}
+                      {job.applications_count || 0}
                     </p>
                     <p className="text-sm text-gray-500">Applications</p>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
                         job.status === "active"
                           ? "bg-green-100 text-green-700"
-                          : "bg-orange-100 text-orange-700"
+                          : job.status === "paused"
+                          ? "bg-orange-100 text-orange-700"
+                          : "bg-gray-100 text-gray-700"
                       }`}
                     >
                       {job.status}
@@ -347,29 +270,37 @@ export const EmployerDashboard: React.FC = () => {
             <Calendar className="w-5 h-5 text-gray-400" />
           </div>
           <div className="space-y-4">
-            {upcomingInterviews.map((interview) => (
-              <div key={interview.id} className="flex gap-3">
-                <div
-                  className={`w-2 h-2 rounded-full mt-2 ${
-                    interview.type === "Technical"
-                      ? "bg-blue-500"
-                      : interview.type === "Final"
-                      ? "bg-green-500"
-                      : "bg-purple-500"
-                  }`}
-                />
-                <div className="flex-1">
-                  <p className="font-medium text-gray-800 text-sm">
-                    {interview.candidate}
-                  </p>
-                  <p className="text-xs text-gray-600">{interview.position}</p>
-                  <p className="text-xs text-gray-500">{interview.time}</p>
-                  <span className="inline-block mt-1 px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
-                    {interview.type}
-                  </span>
+            {upcomingInterviews.length > 0 ? (
+              upcomingInterviews.map((interview) => (
+                <div key={interview.id} className="flex gap-3">
+                  <div
+                    className={`w-2 h-2 rounded-full mt-2 ${
+                      interview.type === "Technical"
+                        ? "bg-blue-500"
+                        : interview.type === "Final"
+                        ? "bg-green-500"
+                        : "bg-purple-500"
+                    }`}
+                  />
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-800 text-sm">
+                      {interview.candidate}
+                    </p>
+                    <p className="text-xs text-gray-600">{interview.position}</p>
+                    <p className="text-xs text-gray-500">{interview.time}</p>
+                    <span className="inline-block mt-1 px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
+                      {interview.type}
+                    </span>
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className="text-center p-8 text-gray-500">
+                <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                <p>No upcoming interviews</p>
+                <p className="text-xs mt-1">Schedule interviews from applications</p>
               </div>
-            ))}
+            )}
           </div>
           <Link
             to="/employer/interviews"
@@ -422,7 +353,7 @@ export const EmployerDashboard: React.FC = () => {
           ) : topCandidates.length > 0 ? (
             topCandidates.map((candidate) => (
               <div
-                key={candidate.id}
+                key={candidate.employee.id}
                 className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between mb-3">
@@ -433,7 +364,7 @@ export const EmployerDashboard: React.FC = () => {
                         {candidate.employee.first_name} {candidate.employee.last_name}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        {candidate.resume_analysis?.total_experience_years} years experience
+                        {candidate.resume_analysis?.total_experience_years || 0} years experience
                       </p>
                     </div>
                   </div>
@@ -441,7 +372,7 @@ export const EmployerDashboard: React.FC = () => {
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 text-yellow-500 fill-current" />
                       <span className="text-sm font-medium text-gray-700">
-                        {candidate.match_summary?.communication_score || 0}%
+                        {candidate.voice_analysis?.overall_communication_score || candidate.match_summary?.communication_score || 0}%
                       </span>
                     </div>
                   </div>
@@ -449,7 +380,7 @@ export const EmployerDashboard: React.FC = () => {
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-1 text-sm text-gray-600">
                     <Award className="w-4 h-4" />
-                    {candidate.resume_analysis?.total_experience_years} years experience
+                    {candidate.resume_analysis?.total_experience_years || 0} years experience
                   </div>
                   <div className="flex items-center gap-1 text-sm text-gray-600">
                     <MapPin className="w-4 h-4" />
@@ -463,7 +394,11 @@ export const EmployerDashboard: React.FC = () => {
                       >
                         {skill}
                       </span>
-                    ))}
+                    )) || (
+                      <span className="px-2 py-1 bg-gray-100 text-xs text-gray-500 rounded">
+                        No skills listed
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -488,6 +423,61 @@ export const EmployerDashboard: React.FC = () => {
               </Link>
             </div>
           )}
+        </div>
+      </motion.div>
+
+      {/* Quick Actions */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="bg-white rounded-xl p-6 shadow-sm"
+      >
+        <h2 className="text-xl font-semibold text-gray-800 mb-6">Quick Actions</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Link
+            to="/employer/candidates"
+            className="flex flex-col items-center p-4 rounded-lg border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all"
+          >
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
+              <Users className="w-6 h-6 text-blue-600" />
+            </div>
+            <span className="text-sm font-medium text-gray-700">View All Candidates</span>
+            <span className="text-xs text-gray-500 mt-1">Browse talent pool</span>
+          </Link>
+
+          <Link
+            to="/employer/search"
+            className="flex flex-col items-center p-4 rounded-lg border-2 border-gray-200 hover:border-green-300 hover:bg-green-50 transition-all"
+          >
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-3">
+              <Search className="w-6 h-6 text-green-600" />
+            </div>
+            <span className="text-sm font-medium text-gray-700">Search Candidates</span>
+            <span className="text-xs text-gray-500 mt-1">AI-powered search</span>
+          </Link>
+
+          <Link
+            to="/employer/interviews"
+            className="flex flex-col items-center p-4 rounded-lg border-2 border-gray-200 hover:border-purple-300 hover:bg-purple-50 transition-all"
+          >
+            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
+              <Calendar className="w-6 h-6 text-purple-600" />
+            </div>
+            <span className="text-sm font-medium text-gray-700">Schedule Interview</span>
+            <span className="text-xs text-gray-500 mt-1">Manage calendar</span>
+          </Link>
+
+          <Link
+            to="/employer/jobs"
+            className="flex flex-col items-center p-4 rounded-lg border-2 border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all"
+          >
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-3">
+              <Plus className="w-6 h-6 text-orange-600" />
+            </div>
+            <span className="text-sm font-medium text-gray-700">Post New Job</span>
+            <span className="text-xs text-gray-500 mt-1">Create listing</span>
+          </Link>
         </div>
       </motion.div>
 
@@ -516,7 +506,8 @@ export const EmployerDashboard: React.FC = () => {
                   <p className="text-sm text-gray-600">{metric.label}</p>
                   <TrendingUp
                     className={`w-4 h-4 ${
-                      metric.trend === "up" ? "text-green-500" : "text-red-500"
+                      metric.trend === "up" ? "text-green-500" :
+                      metric.trend === "down" ? "text-red-500" : "text-gray-400"
                     }`}
                   />
                 </div>

@@ -1,11 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Sidebar } from '../components/common/Sidebar';
 import { Header } from '../components/common/Header';
+import { useResponsive } from '../hooks/useResponsive';
 
 export const DashboardLayout: React.FC = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { isDesktop } = useResponsive();
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // On mobile, sidebar should be closed by default
+  useEffect(() => {
+    if (!isDesktop) {
+      setSidebarOpen(false);
+    } else {
+      setSidebarOpen(true);
+    }
+  }, [isDesktop]);
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);

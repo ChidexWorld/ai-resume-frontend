@@ -3,7 +3,7 @@ import type { RegisterData, LoginCredentials, UserUpdateData } from '../types';
 
 // Create axios instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
+  baseURL: (import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api',
   timeout: 30000,
 });
 
@@ -107,6 +107,13 @@ export const employeeAPI = {
     limit?: number;
     min_score?: number;
   }) => api.get('/employee/job-recommendations', { params }),
+
+  // Skills analysis
+  getSkillsAnalysis: () => api.get('/employee/skills-analysis'),
+
+  // Job match analysis
+  analyzeJobMatch: (jobId: number, resumeId?: number) =>
+    api.post(`/employee/analyze-job-match/${jobId}`, { resume_id: resumeId }),
 };
 
 // Employer API - Matches server employer router

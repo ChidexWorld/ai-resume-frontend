@@ -197,3 +197,33 @@ export const useRefreshJobRecommendations = () => {
     },
   });
 };
+
+// Skills Analysis Hook
+export const useGetSkillsAnalysis = () => {
+  return useQuery({
+    queryKey: ["skills-analysis"],
+    queryFn: () =>
+      employeeAPI.getSkillsAnalysis().then((res) => res.data),
+    staleTime: 300000, // 5 minutes
+  });
+};
+
+// Job Match Analysis Hook
+export const useAnalyzeJobMatch = () => {
+  return useMutation({
+    mutationFn: ({
+      jobId,
+      resumeId,
+    }: {
+      jobId: number;
+      resumeId?: number;
+    }) => employeeAPI.analyzeJobMatch(jobId, resumeId),
+    onError: (error: ApiError) => {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.detail ||
+        "Failed to analyze job match";
+      toast.error(message);
+    },
+  });
+};

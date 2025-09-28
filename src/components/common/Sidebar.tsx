@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useResponsive } from "../../hooks/useResponsive";
 import {
   LayoutDashboard,
   FileText,
@@ -33,6 +34,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
+  const { isDesktop, isMobile } = useResponsive();
 
   const handleLogout = () => {
     logout();
@@ -55,15 +57,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const employerMenuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/employer/dashboard" },
     { icon: Briefcase, label: "Job Postings", path: "/employer/jobs" },
-    { icon: Users, label: "Candidates", path: "/employer/candidates" },
-    { icon: Search, label: "Talent Search", path: "/employer/search" },
+    { icon: Search, label: "Talent Hunt", path: "/employer/search" },
     { icon: Calendar, label: "Interviews", path: "/employer/interviews" },
     { icon: BarChart3, label: "Analytics", path: "/employer/analytics" },
-    { icon: Building, label: "Company Profile", path: "/employer/company" },
     { icon: Shield, label: "Compliance", path: "/employer/compliance" },
-    { icon: MessageSquare, label: "Messages", path: "/employer/messages" },
-    { icon: User, label: "Profile", path: "/employer/profile" },
-    { icon: Settings, label: "Settings", path: "/employer/settings" },
+    { icon: User, label: "Company Profile", path: "/employer/profile" },
+    // { icon: Settings, label: "Settings", path: "/employer/settings" },
   ];
 
   const adminMenuItems = [
@@ -121,25 +120,30 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     <>
       {/* Mobile Overlay */}
       <AnimatePresence>
-        {isOpen && (
+        {isOpen && isMobile && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            className="fixed inset-0 bg-black/50 z-40"
           />
         )}
       </AnimatePresence>
 
       {/* Sidebar */}
       <motion.aside
-        initial={{ x: -280 }}
-        animate={{ x: isOpen ? 0 : -280 }}
+        initial={false}
+        animate={{
+          x: isMobile ? (isOpen ? 0 : -280) : 0,
+          width: isDesktop ? (isOpen ? 288 : 80) : 288
+        }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className={`fixed left-0 top-0 h-full w-72 bg-white shadow-2xl z-50 lg:relative lg:translate-x-0 ${
-          isOpen ? "" : "lg:w-20"
-        }`}
+        className={`${
+          isMobile
+            ? "fixed left-0 top-0 h-full bg-white shadow-2xl z-50"
+            : "relative h-full bg-white border-r border-gray-200"
+        } ${!isOpen && isDesktop ? "w-20" : "w-72"}`}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
@@ -162,12 +166,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   </div>
                 )}
               </motion.div>
-              <button
-                onClick={onClose}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors lg:hidden"
-              >
-                <ChevronLeft className="w-5 h-5 text-gray-600" />
-              </button>
+              {isMobile && (
+                <button
+                  onClick={onClose}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5 text-gray-600" />
+                </button>
+              )}
             </div>
           </div>
 
