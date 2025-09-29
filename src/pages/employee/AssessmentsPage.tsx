@@ -126,7 +126,7 @@ export const AssessmentsPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Skills Assessment</h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-gray-600 dark:text-gray-300 mt-1">
             Evaluate your communication skills and track your progress
           </p>
         </div>
@@ -140,7 +140,7 @@ export const AssessmentsPage: React.FC = () => {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center">
             <div className="p-2 bg-blue-100 rounded-lg">
               <Volume2 className="w-5 h-5 text-blue-600" />
@@ -154,7 +154,7 @@ export const AssessmentsPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center">
             <div className="p-2 bg-green-100 rounded-lg">
               <MessageSquare className="w-5 h-5 text-green-600" />
@@ -168,7 +168,7 @@ export const AssessmentsPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center">
             <div className="p-2 bg-purple-100 rounded-lg">
               <Target className="w-5 h-5 text-purple-600" />
@@ -182,7 +182,7 @@ export const AssessmentsPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center">
             <div className="p-2 bg-orange-100 rounded-lg">
               <Zap className="w-5 h-5 text-orange-600" />
@@ -203,8 +203,8 @@ export const AssessmentsPage: React.FC = () => {
           onClick={() => setActiveTab('voice')}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
             activeTab === 'voice'
-              ? 'bg-white text-primary-600 shadow-sm'
-              : 'text-gray-600 hover:text-gray-900'
+              ? 'bg-white dark:bg-gray-800 text-primary-600 shadow-sm'
+              : 'text-gray-600 dark:text-gray-300 hover:text-gray-900'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -216,8 +216,8 @@ export const AssessmentsPage: React.FC = () => {
           onClick={() => setActiveTab('skills')}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
             activeTab === 'skills'
-              ? 'bg-white text-primary-600 shadow-sm'
-              : 'text-gray-600 hover:text-gray-900'
+              ? 'bg-white dark:bg-gray-800 text-primary-600 shadow-sm'
+              : 'text-gray-600 dark:text-gray-300 hover:text-gray-900'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -229,8 +229,8 @@ export const AssessmentsPage: React.FC = () => {
           onClick={() => setActiveTab('results')}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
             activeTab === 'results'
-              ? 'bg-white text-primary-600 shadow-sm'
-              : 'text-gray-600 hover:text-gray-900'
+              ? 'bg-white dark:bg-gray-800 text-primary-600 shadow-sm'
+              : 'text-gray-600 dark:text-gray-300 hover:text-gray-900'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -248,9 +248,9 @@ export const AssessmentsPage: React.FC = () => {
           className="space-y-6"
         >
           {/* Voice Recording Section */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <h2 className="text-xl font-semibold mb-4">Record Voice Sample</h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
               Record a 2-3 minute voice sample to analyze your communication skills.
               You can talk about your career goals, experience, or answer sample interview questions.
             </p>
@@ -332,19 +332,19 @@ export const AssessmentsPage: React.FC = () => {
           </div>
 
           {/* File Upload Alternative */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <h2 className="text-xl font-semibold mb-4">Upload Audio File</h2>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
               Alternatively, you can upload an existing audio file (MP3, WAV, M4A)
             </p>
 
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
               <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 mb-2">Drag and drop your audio file here, or</p>
+              <p className="text-gray-600 dark:text-gray-300 mb-2">Drag and drop your audio file here, or</p>
               <button className="text-primary-600 hover:text-primary-700 font-medium">
                 browse files
               </button>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                 Supported formats: MP3, WAV, M4A (max 50MB)
               </p>
             </div>
@@ -359,7 +359,7 @@ export const AssessmentsPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6"
         >
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <h2 className="text-xl font-semibold mb-4">Available Skill Assessments</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -397,7 +397,7 @@ export const AssessmentsPage: React.FC = () => {
                   completed: false
                 }
               ].map((assessment, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-primary-100 rounded-lg">
                       <assessment.icon className="w-5 h-5 text-primary-600" />
@@ -408,7 +408,7 @@ export const AssessmentsPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <p className="text-sm text-gray-600 mb-3">{assessment.description}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">{assessment.description}</p>
 
                   <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-1 text-gray-500">
@@ -441,7 +441,7 @@ export const AssessmentsPage: React.FC = () => {
           className="space-y-6"
         >
           {/* Voice Analysis Results */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <h2 className="text-xl font-semibold mb-4">Voice Analysis History</h2>
 
             {voiceLoading ? (
@@ -458,8 +458,8 @@ export const AssessmentsPage: React.FC = () => {
             ) : (
               <div className="text-center py-8">
                 <Mic className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No voice analyses yet</h3>
-                <p className="text-gray-600 mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No voice analyses yet</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">
                   Complete your first voice assessment to see detailed results and progress tracking
                 </p>
                 <button
@@ -474,7 +474,7 @@ export const AssessmentsPage: React.FC = () => {
 
           {/* Progress Chart */}
           {voiceAnalyses && voiceAnalyses.length > 1 && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h2 className="text-xl font-semibold mb-4">Progress Tracking</h2>
               <div className="text-center py-8 text-gray-500">
                 <BarChart3 className="w-16 h-16 mx-auto mb-4" />
@@ -496,7 +496,7 @@ interface VoiceAnalysisCardProps {
 
 const VoiceAnalysisCard: React.FC<VoiceAnalysisCardProps> = ({ analysis, getScoreColor }) => {
   return (
-    <div className="border border-gray-200 rounded-lg p-4">
+    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
       <div className="flex items-start justify-between mb-4">
         <div>
           <h3 className="font-semibold text-gray-900">
@@ -539,7 +539,7 @@ const VoiceAnalysisCard: React.FC<VoiceAnalysisCardProps> = ({ analysis, getScor
       </div>
 
       {analysis.analysis_results && (
-        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+        <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
           <p className="text-sm text-gray-700">
             <strong>Key Insights:</strong> {analysis.analysis_results.summary || 'Analysis completed successfully'}
           </p>

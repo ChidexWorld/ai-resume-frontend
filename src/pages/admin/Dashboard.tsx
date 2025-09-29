@@ -132,7 +132,7 @@ export const AdminDashboard: React.FC = () => {
             </p>
           </div>
           <div className="hidden md:block">
-            <div className="bg-white/10 backdrop-blur-lg rounded-lg p-4">
+            <div className="bg-white dark:bg-gray-800/10 backdrop-blur-lg rounded-lg p-4">
               <Shield className="w-8 h-8 text-white mb-2" />
               <p className="text-sm">System Status</p>
               <p className="text-2xl font-bold">99.9%</p>
@@ -149,7 +149,7 @@ export const AdminDashboard: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
+            className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
           >
             <div className="flex items-center justify-between">
               <div className={`p-3 rounded-lg ${
@@ -166,8 +166,8 @@ export const AdminDashboard: React.FC = () => {
                 }`} />
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-gray-800">{stat.value}</p>
-                <p className="text-sm text-gray-500">{stat.label}</p>
+                <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">{stat.value}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
               </div>
             </div>
             <p className="text-xs text-green-600 mt-4 font-medium">
@@ -183,10 +183,10 @@ export const AdminDashboard: React.FC = () => {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-xl p-6 shadow-sm"
+          className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-800">System Health</h2>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">System Health</h2>
             <Activity className="w-5 h-5 text-gray-400" />
           </div>
           <div className="space-y-4">
@@ -205,11 +205,11 @@ export const AdminDashboard: React.FC = () => {
                     }`} />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-800 text-sm">{item.metric}</p>
+                    <p className="font-medium text-gray-800 dark:text-gray-100 text-sm">{item.metric}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium text-gray-800 text-sm">{item.value}</p>
+                  <p className="font-medium text-gray-800 dark:text-gray-100 text-sm">{item.value}</p>
                   <div className={`w-2 h-2 rounded-full ${
                     item.status === 'healthy' ? 'bg-green-500' :
                     item.status === 'warning' ? 'bg-yellow-500' :
@@ -226,21 +226,21 @@ export const AdminDashboard: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm"
+          className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-800">Recent Activity</h2>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Recent Activity</h2>
             <Eye className="w-5 h-5 text-gray-400" />
           </div>
           <div className="space-y-4">
             {usersLoading ? (
               <div className="flex items-center justify-center p-8">
                 <Loader2 className="animate-spin w-6 h-6 text-gray-400" />
-                <span className="ml-2 text-gray-500">Loading activities...</span>
+                <span className="ml-2 text-gray-500 dark:text-gray-400">Loading activities...</span>
               </div>
             ) : recentActivities.length > 0 ? (
               recentActivities.map((activity) => (
-                <div key={activity.id} className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                <div key={activity.id} className="flex items-center gap-4 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">
                   <div className={`p-2 rounded-lg ${
                     activity.color === 'blue' ? 'bg-blue-100' :
                     activity.color === 'green' ? 'bg-green-100' :
@@ -255,11 +255,11 @@ export const AdminDashboard: React.FC = () => {
                     }`} />
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-800 text-sm">{activity.description}</p>
-                    <p className="text-sm text-gray-600">{activity.user}</p>
+                    <p className="font-medium text-gray-800 dark:text-gray-100 text-sm">{activity.description}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">{activity.user}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-gray-500">Joined: {activity.timestamp}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Joined: {activity.timestamp}</p>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       activity.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
                     }`}>
@@ -269,7 +269,7 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div className="text-center p-8 text-gray-500">
+              <div className="text-center p-8 text-gray-500 dark:text-gray-400">
                 <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                 <p>No recent user activity</p>
               </div>
@@ -285,23 +285,23 @@ export const AdminDashboard: React.FC = () => {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white rounded-xl p-6 shadow-sm"
+          className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-800">Moderation Queue</h2>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Moderation Queue</h2>
             <AlertTriangle className="w-5 h-5 text-gray-400" />
           </div>
           <div className="space-y-4">
             {moderationLoading ? (
               <div className="flex items-center justify-center p-8">
                 <Loader2 className="animate-spin w-6 h-6 text-gray-400" />
-                <span className="ml-2 text-gray-500">Loading content...</span>
+                <span className="ml-2 text-gray-500 dark:text-gray-400">Loading content...</span>
               </div>
             ) : contentModerationQueue.length > 0 ? (
               contentModerationQueue.map((item) => (
-                <div key={item.id} className="border border-gray-200 rounded-lg p-4">
+                <div key={item.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium text-gray-800 text-sm capitalize">{item.type}</span>
+                    <span className="font-medium text-gray-800 dark:text-gray-100 text-sm capitalize">{item.type}</span>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       item.priority === 'high' ? 'bg-red-100 text-red-700' :
                       item.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
@@ -310,9 +310,9 @@ export const AdminDashboard: React.FC = () => {
                       {item.priority}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">{item.content}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{item.content}</p>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
                       Status: {item.status} | Created: {new Date(item.created_at).toLocaleDateString()}
                     </span>
                     <div className="flex gap-2">
@@ -327,7 +327,7 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div className="text-center p-8 text-gray-500">
+              <div className="text-center p-8 text-gray-500 dark:text-gray-400">
                 <AlertTriangle className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                 <p>No content requiring moderation</p>
                 <p className="text-xs mt-1">All content is currently clean</p>
@@ -341,40 +341,40 @@ export const AdminDashboard: React.FC = () => {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-white rounded-xl p-6 shadow-sm"
+          className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-800">Analytics Overview</h2>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Analytics Overview</h2>
             <BarChart3 className="w-5 h-5 text-gray-400" />
           </div>
           {statsLoading || trendsLoading ? (
             <div className="flex items-center justify-center p-8">
               <Loader2 className="animate-spin w-6 h-6 text-gray-400" />
-              <span className="ml-2 text-gray-500">Loading analytics...</span>
+              <span className="ml-2 text-gray-500 dark:text-gray-400">Loading analytics...</span>
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="p-4 border border-gray-200 rounded-lg">
-                <p className="text-sm text-gray-600 mb-2">Average Match Score</p>
-                <p className="text-2xl font-bold text-gray-800">
+              <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">Average Match Score</p>
+                <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
                   {systemStats?.average_match_score?.toFixed(1) || 0}%
                 </p>
               </div>
-              <div className="p-4 border border-gray-200 rounded-lg">
-                <p className="text-sm text-gray-600 mb-2">Applications per Job</p>
-                <p className="text-2xl font-bold text-gray-800">
+              <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">Applications per Job</p>
+                <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
                   {systemStats?.average_applications_per_job?.toFixed(1) || 0}
                 </p>
               </div>
-              <div className="p-4 border border-gray-200 rounded-lg">
-                <p className="text-sm text-gray-600 mb-2">High Score Matches</p>
-                <p className="text-2xl font-bold text-gray-800">
+              <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">High Score Matches</p>
+                <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
                   {systemStats?.high_score_matches || 0}
                 </p>
               </div>
-              <div className="p-4 border border-gray-200 rounded-lg">
-                <p className="text-sm text-gray-600 mb-2">Weekly Trend</p>
-                <p className="text-sm text-gray-800">
+              <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">Weekly Trend</p>
+                <p className="text-sm text-gray-800 dark:text-gray-100">
                   {systemStats?.new_resumes_this_week || 0} resumes, {systemStats?.new_applications_this_week || 0} applications
                 </p>
               </div>
@@ -390,27 +390,27 @@ export const AdminDashboard: React.FC = () => {
         transition={{ delay: 0.6 }}
         className="grid md:grid-cols-4 gap-4"
       >
-        <button className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-indigo-300 hover:bg-indigo-50 transition-all group">
+        <button className="bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-indigo-300 hover:bg-indigo-50 transition-all group">
           <Users className="w-8 h-8 text-gray-400 group-hover:text-indigo-600 mx-auto mb-2" />
-          <p className="font-medium text-gray-600 group-hover:text-indigo-700">
+          <p className="font-medium text-gray-600 dark:text-gray-300 group-hover:text-indigo-700">
             Manage Users
           </p>
         </button>
-        <button className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-indigo-300 hover:bg-indigo-50 transition-all group">
+        <button className="bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-indigo-300 hover:bg-indigo-50 transition-all group">
           <Settings className="w-8 h-8 text-gray-400 group-hover:text-indigo-600 mx-auto mb-2" />
-          <p className="font-medium text-gray-600 group-hover:text-indigo-700">
+          <p className="font-medium text-gray-600 dark:text-gray-300 group-hover:text-indigo-700">
             System Settings
           </p>
         </button>
-        <button className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-indigo-300 hover:bg-indigo-50 transition-all group">
+        <button className="bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-indigo-300 hover:bg-indigo-50 transition-all group">
           <BarChart3 className="w-8 h-8 text-gray-400 group-hover:text-indigo-600 mx-auto mb-2" />
-          <p className="font-medium text-gray-600 group-hover:text-indigo-700">
+          <p className="font-medium text-gray-600 dark:text-gray-300 group-hover:text-indigo-700">
             View Reports
           </p>
         </button>
-        <button className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-indigo-300 hover:bg-indigo-50 transition-all group">
+        <button className="bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-indigo-300 hover:bg-indigo-50 transition-all group">
           <Database className="w-8 h-8 text-gray-400 group-hover:text-indigo-600 mx-auto mb-2" />
-          <p className="font-medium text-gray-600 group-hover:text-indigo-700">
+          <p className="font-medium text-gray-600 dark:text-gray-300 group-hover:text-indigo-700">
             System Cleanup
           </p>
         </button>

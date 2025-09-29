@@ -150,7 +150,7 @@ export const ProfilePage: React.FC = () => {
   if (!user) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">Failed to load profile data</p>
+        <p className="text-gray-600 dark:text-gray-300">Failed to load profile data</p>
       </div>
     );
   }
@@ -158,15 +158,15 @@ export const ProfilePage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
               <User className="w-8 h-8 text-primary-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{user.full_name}</h1>
-              <p className="text-gray-600">Job Seeker Profile</p>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{user.full_name}</h1>
+              <p className="text-gray-600 dark:text-gray-300">Job Seeker Profile</p>
               <div className="flex items-center gap-2 mt-1">
                 {user.is_verified ? (
                   <span className="flex items-center gap-1 text-green-600 text-sm">
@@ -193,9 +193,9 @@ export const ProfilePage: React.FC = () => {
       </div>
 
       {/* Personal Information */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">Personal Information</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Personal Information</h2>
           {!isEditing && (
             <button
               onClick={handleEditProfile}
@@ -264,7 +264,7 @@ export const ProfilePage: React.FC = () => {
               </button>
               <button
                 onClick={handleCancelEdit}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-900 transition-colors"
               >
                 <X className="w-4 h-4" />
                 Cancel
@@ -277,15 +277,15 @@ export const ProfilePage: React.FC = () => {
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-gray-400" />
                 <div>
-                  <p className="text-sm text-gray-600">Email Address</p>
-                  <p className="font-medium text-gray-900">{user.email}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Email Address</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">{user.email}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-gray-400" />
                 <div>
-                  <p className="text-sm text-gray-600">Phone Number</p>
-                  <p className="font-medium text-gray-900">{user.phone || 'Not provided'}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Phone Number</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">{user.phone || 'Not provided'}</p>
                 </div>
               </div>
             </div>
@@ -293,8 +293,8 @@ export const ProfilePage: React.FC = () => {
               <div className="flex items-center gap-3">
                 <Calendar className="w-5 h-5 text-gray-400" />
                 <div>
-                  <p className="text-sm text-gray-600">Member Since</p>
-                  <p className="font-medium text-gray-900">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Member Since</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">
                     {format(new Date(user.created_at), 'MMMM d, yyyy')}
                   </p>
                 </div>
@@ -302,8 +302,8 @@ export const ProfilePage: React.FC = () => {
               <div className="flex items-center gap-3">
                 <User className="w-5 h-5 text-gray-400" />
                 <div>
-                  <p className="text-sm text-gray-600">Account Type</p>
-                  <p className="font-medium text-gray-900">Job Seeker</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Account Type</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">Job Seeker</p>
                 </div>
               </div>
             </div>
@@ -312,16 +312,16 @@ export const ProfilePage: React.FC = () => {
       </div>
 
       {/* Security Settings */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Security Settings</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-6">Security Settings</h2>
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+          <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
             <div className="flex items-center gap-3">
               <Shield className="w-5 h-5 text-gray-400" />
               <div>
-                <p className="font-medium text-gray-900">Password</p>
-                <p className="text-sm text-gray-600">Change your account password</p>
+                <p className="font-medium text-gray-900 dark:text-gray-100">Password</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Change your account password</p>
               </div>
             </div>
             <button
@@ -337,7 +337,7 @@ export const ProfilePage: React.FC = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="border border-gray-200 rounded-lg p-4 space-y-4"
+              className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-4"
             >
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -354,7 +354,7 @@ export const ProfilePage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowPasswords(prev => ({ ...prev, current: !prev.current }))}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-300"
                   >
                     {showPasswords.current ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -376,7 +376,7 @@ export const ProfilePage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowPasswords(prev => ({ ...prev, new: !prev.new }))}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-300"
                   >
                     {showPasswords.new ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -398,7 +398,7 @@ export const ProfilePage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowPasswords(prev => ({ ...prev, confirm: !prev.confirm }))}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-300"
                   >
                     {showPasswords.confirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -419,7 +419,7 @@ export const ProfilePage: React.FC = () => {
                     setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
                     setShowPasswords({ current: false, new: false, confirm: false });
                   }}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-900 transition-colors"
                 >
                   Cancel
                 </button>
@@ -455,15 +455,15 @@ export const ProfilePage: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg max-w-md w-full p-6"
+            className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6"
           >
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
                 <AlertTriangle className="w-6 h-6 text-red-600" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Deactivate Account</h3>
-                <p className="text-sm text-gray-600">This action cannot be undone</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Deactivate Account</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">This action cannot be undone</p>
               </div>
             </div>
 
@@ -471,7 +471,7 @@ export const ProfilePage: React.FC = () => {
               Are you sure you want to deactivate your account? You will lose access to:
             </p>
 
-            <ul className="list-disc list-inside text-sm text-gray-600 mb-6 space-y-1">
+            <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-300 mb-6 space-y-1">
               <li>All your resumes and analyses</li>
               <li>Job applications and recommendations</li>
               <li>Voice assessments and feedback</li>
@@ -488,7 +488,7 @@ export const ProfilePage: React.FC = () => {
               </button>
               <button
                 onClick={() => setShowDeactivateModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-900 transition-colors"
               >
                 Cancel
               </button>

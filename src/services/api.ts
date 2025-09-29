@@ -5,6 +5,7 @@ import type { RegisterData, LoginCredentials, UserUpdateData } from '../types';
 const api = axios.create({
   baseURL: (import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api',
   timeout: 30000,
+  withCredentials: false, // Set to false to match backend CORS
 });
 
 // Request interceptor to add auth token
@@ -27,13 +28,31 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Handle different types of errors
     if (error.response?.status === 401) {
-      localStorage.removeItem('auth-storage');
-      window.location.href = '/login';
+      // Check if this is a login attempt (don't redirect if it's login endpoint)
+      const isLoginAttempt = error.config?.url?.includes('/auth/login');
+
+      if (!isLoginAttempt) {
+        localStorage.removeItem('auth-storage');
+        window.location.href = '/login';
+      }
     }
+
+    // Enhance error object with consistent format
+    if (error.response?.data) {
+      // Backend returns {detail: "message"} format
+      if (error.response.data.detail && !error.response.data.message) {
+        error.response.data.message = error.response.data.detail;
+      }
+    }
+
     return Promise.reject(error);
   }
 );
+
+// Export the configured axios instance for use in other services
+export { api };
 
 // Authentication API - Matches server auth router
 export const authAPI = {

@@ -20,9 +20,9 @@ export const useLogin = () => {
     },
     onError: (error: ApiError) => {
       const message =
-        error.response?.data?.message ||
         error.response?.data?.detail ||
-        "Login failed";
+        error.response?.data?.message ||
+        "Login failed. Please check your credentials.";
       toast.error(message);
     },
   });

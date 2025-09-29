@@ -123,6 +123,17 @@ export const LoginForm: React.FC = () => {
             </Link>
           </div>
 
+          {/* Error Display */}
+          {loginMutation.isError && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-600 text-sm">
+                {(loginMutation.error as any)?.response?.data?.detail ||
+                 (loginMutation.error as any)?.response?.data?.message ||
+                 "Login failed. Please check your credentials."}
+              </p>
+            </div>
+          )}
+
           {/* Submit Button */}
           <motion.button
             type="submit"

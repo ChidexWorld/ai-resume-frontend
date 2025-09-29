@@ -1,25 +1,4 @@
-import axios from 'axios';
-import { API_BASE_URL } from '../utils/constants';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-});
-
-// Add auth token to requests
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('auth-storage');
-  if (token) {
-    try {
-      const parsed = JSON.parse(token);
-      if (parsed.state.token) {
-        config.headers.Authorization = `Bearer ${parsed.state.token}`;
-      }
-    } catch (error) {
-      console.error('Error parsing auth token:', error);
-    }
-  }
-  return config;
-});
+import { api } from './api';
 
 export interface JobMatch {
   id: number;
@@ -81,13 +60,13 @@ export const matchingService = {
     limit?: number;
     offset?: number;
   }): Promise<EmployeeMatch[]> => {
-    const response = await api.get('/api/matching/employee-matches', { params });
+    const response = await api.get('/matching/employee-matches', { params });
     return response.data;
   },
 
   // Calculate match between employee and job
   calculateMatch: async (matchRequest: MatchCalculationRequest): Promise<JobMatch> => {
-    const response = await api.post('/api/matching/calculate-match', matchRequest);
+    const response = await api.post('/matching/calculate-match', matchRequest);
     return response.data;
   },
 
@@ -99,7 +78,7 @@ export const matchingService = {
 
   // Get matching statistics
   getMatchingStats: async (): Promise<MatchingStats> => {
-    const response = await api.get('/api/matching/matching-stats');
+    const response = await api.get('/matching/matching-stats');
     return response.data;
   },
 
@@ -109,7 +88,7 @@ export const matchingService = {
     total_matches_generated: number;
     jobs_processed: number;
   }> => {
-    const response = await api.post('/api/matching/bulk-match-generation', bulkRequest);
+    const response = await api.post('/matching/bulk-match-generation', bulkRequest);
     return response.data;
   },
 };

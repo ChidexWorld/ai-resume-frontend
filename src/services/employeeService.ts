@@ -1,64 +1,63 @@
-import axios from 'axios';
-import { API_BASE_URL } from '../utils/constants';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-});
-
-// Add auth token to requests
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('auth-storage');
-  if (token) {
-    try {
-      const parsed = JSON.parse(token);
-      if (parsed.state.token) {
-        config.headers.Authorization = `Bearer ${parsed.state.token}`;
-      }
-    } catch (error) {
-      console.error('Error parsing auth token:', error);
-    }
-  }
-  return config;
-});
+import { api } from './api';
 
 export interface Resume {
   id: number;
-  filename: string;
+  employee_id: number;
   original_filename: string;
   file_path: string;
   file_size: number;
-  status: 'uploaded' | 'processing' | 'analyzed' | 'failed';
-  total_experience_years: number;
-  experience_level: string;
-  skills: string[];
-  education: any;
-  contact_info: any;
-  summary: string;
-  analysis_results: any;
-  is_active: boolean;
+  content_type: string;
   is_analyzed: boolean;
+  analysis_status: string;
+  extracted_text?: string;
+  analysis_results?: {
+    contact_info?: Record<string, any>;
+    skills?: Record<string, any>;
+    experience?: Array<any>;
+    education?: Array<any>;
+    certifications?: Array<any>;
+    languages?: Array<any>;
+    professional_summary?: string;
+    experience_level?: string;
+    total_experience_years?: number;
+  };
   created_at: string;
   updated_at: string;
+  analyzed_at?: string;
 }
 
 export interface VoiceAnalysis {
   id: number;
-  filename: string;
+  employee_id: number;
   original_filename: string;
   file_path: string;
   file_size: number;
-  status: 'uploaded' | 'processing' | 'completed' | 'failed';
-  duration_seconds: number;
-  overall_communication_score: number;
-  fluency_score: number;
-  clarity_score: number;
-  confidence_score: number;
-  pace_score: number;
-  pronunciation_score: number;
-  analysis_results: any;
-  is_active: boolean;
+  content_type: string;
+  is_analyzed: boolean;
+  analysis_status: string;
+  transcription?: string;
+  duration_seconds?: number; // For compatibility, this will map to the backend's duration field
+  overall_communication_score?: number;
+  analysis_results?: {
+    speech_features?: Record<string, any>;
+    communication_analysis?: Record<string, any>;
+    language_analysis?: Record<string, any>;
+    clarity_score?: number;
+    confidence_score?: number;
+    fluency_score?: number;
+    vocabulary_score?: number;
+    overall_communication_score?: number;
+    strengths?: Array<string>;
+    areas_for_improvement?: Array<string>;
+    speaking_pace?: string;
+    professional_language_usage?: number;
+    emotional_tone?: string;
+    communication_summary?: Record<string, any>;
+    transcript_stats?: Record<string, any>;
+  };
   created_at: string;
   updated_at: string;
+  analyzed_at?: string;
 }
 
 export interface JobApplication {
@@ -79,23 +78,50 @@ export interface JobApplication {
 }
 
 export interface JobRecommendation {
-  id: number;
-  title: string;
-  description: string;
-  company_name: string;
-  location: string;
-  remote_allowed: boolean;
-  job_type: string;
-  experience_level: string;
-  salary_min?: number;
-  salary_max?: number;
-  currency: string;
-  required_skills: string[];
-  preferred_skills: string[];
+  match_id: number;
+  job: {
+    id: number;
+    employer_id: number;
+    title: string;
+    description: string;
+    department: string;
+    location: string;
+    remote_allowed: boolean;
+    job_type: string;
+    experience_level: string;
+    salary_range?: string;
+    currency: string;
+    status: string;
+    is_urgent: boolean;
+    is_active: boolean;
+    applications_count: number;
+    max_applications?: number;
+    auto_match_enabled: boolean;
+    minimum_match_score: number;
+    created_at: string;
+    updated_at: string;
+    expires_at?: string;
+    required_skills: string[];
+    preferred_skills: string[];
+    required_education?: any;
+    required_experience: {
+      minimum_years: number;
+      preferred_areas: string[];
+    };
+    communication_requirements?: any;
+    matching_weights?: any;
+  };
   match_score: number;
-  match_details: any;
+  match_details: {
+    skills_score: number;
+    experience_score: number;
+    matching_skills: string[];
+    missing_skills: string[];
+    strengths: string[];
+    concerns: string[];
+    recommendations: string[];
+  };
   created_at: string;
-  expires_at?: string;
 }
 
 export interface JobPosting {
@@ -109,12 +135,26 @@ export interface JobPosting {
   experience_level: string;
   salary_min?: number;
   salary_max?: number;
+  salary_range?: string;
   currency: string;
   required_skills: string[];
   preferred_skills: string[];
   status: string;
+  department?: string;
+  is_urgent?: boolean;
+  applications_count?: number;
+  minimum_match_score?: number;
   created_at: string;
+  updated_at?: string;
   expires_at?: string;
+}
+
+export interface JobSearchResponse {
+  jobs: JobPosting[];
+  total_count: number;
+  limit: number;
+  offset: number;
+  has_more: boolean;
 }
 
 export interface DashboardStats {
@@ -128,40 +168,41 @@ export interface DashboardStats {
   recent_activity_count: number;
 }
 
+
 export const employeeService = {
   // Dashboard stats
   getDashboardStats: async (): Promise<DashboardStats> => {
-    const response = await api.get('/api/employee/dashboard/stats');
+    const response = await api.get("/employee/dashboard/stats");
     return response.data;
   },
 
   // Resume management
   uploadResume: async (file: File): Promise<Resume> => {
     const formData = new FormData();
-    formData.append('file', file);
-    const response = await api.post('/api/employee/resume/upload', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+    formData.append("file", file);
+    const response = await api.post("/employee/resume/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
   },
 
   getResumes: async (): Promise<Resume[]> => {
-    const response = await api.get('/api/employee/resumes');
+    const response = await api.get("/employee/resumes");
     return response.data;
   },
 
   getResume: async (resumeId: number): Promise<Resume> => {
-    const response = await api.get(`/api/employee/resumes/${resumeId}`);
+    const response = await api.get(`/employee/resumes/${resumeId}`);
     return response.data;
   },
 
   deleteResume: async (resumeId: number): Promise<void> => {
-    await api.delete(`/api/employee/resumes/${resumeId}`);
+    await api.delete(`/employee/resumes/${resumeId}`);
   },
 
   downloadResume: async (resumeId: number): Promise<Blob> => {
-    const response = await api.get(`/api/employee/resumes/${resumeId}/download`, {
-      responseType: 'blob'
+    const response = await api.get(`/employee/resumes/${resumeId}/download`, {
+      responseType: "blob",
     });
     return response.data;
   },
@@ -169,34 +210,40 @@ export const employeeService = {
   // Voice analysis
   uploadVoiceAnalysis: async (file: File): Promise<VoiceAnalysis> => {
     const formData = new FormData();
-    formData.append('file', file);
-    const response = await api.post('/api/employee/voice/upload', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+    formData.append("file", file);
+    const response = await api.post("/employee/voice/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
   },
 
   getVoiceAnalyses: async (): Promise<VoiceAnalysis[]> => {
-    const response = await api.get('/api/employee/voice-analyses');
+    const response = await api.get("/employee/voice-analyses");
     return response.data;
   },
 
   getVoiceAnalysis: async (analysisId: number): Promise<VoiceAnalysis> => {
-    const response = await api.get(`/api/employee/voice-analyses/${analysisId}`);
+    const response = await api.get(`/employee/voice-analyses/${analysisId}`);
     return response.data;
   },
 
   deleteVoiceAnalysis: async (analysisId: number): Promise<void> => {
-    await api.delete(`/api/employee/voice-analyses/${analysisId}`);
+    await api.delete(`/employee/voice-analyses/${analysisId}`);
   },
 
   // Job applications
-  applyToJob: async (jobId: number, applicationData: {
-    resume_id?: number;
-    voice_analysis_id?: number;
-    cover_letter?: string;
-  }): Promise<JobApplication> => {
-    const response = await api.post(`/api/employee/apply/${jobId}`, applicationData);
+  applyToJob: async (
+    jobId: number,
+    applicationData: {
+      resume_id?: number;
+      voice_analysis_id?: number;
+      cover_letter?: string;
+    }
+  ): Promise<JobApplication> => {
+    const response = await api.post(
+      `/employee/apply/${jobId}`,
+      applicationData
+    );
     return response.data;
   },
 
@@ -205,17 +252,17 @@ export const employeeService = {
     limit?: number;
     offset?: number;
   }): Promise<JobApplication[]> => {
-    const response = await api.get('/api/employee/applications', { params });
+    const response = await api.get("/employee/applications", { params });
     return response.data;
   },
 
   getApplication: async (applicationId: number): Promise<JobApplication> => {
-    const response = await api.get(`/api/employee/applications/${applicationId}`);
+    const response = await api.get(`/employee/applications/${applicationId}`);
     return response.data;
   },
 
   withdrawApplication: async (applicationId: number): Promise<void> => {
-    await api.put(`/api/employee/applications/${applicationId}/withdraw`);
+    await api.put(`/employee/applications/${applicationId}/withdraw`);
   },
 
   // Job search and recommendations
@@ -223,8 +270,15 @@ export const employeeService = {
     limit?: number;
     min_score?: number;
   }): Promise<JobRecommendation[]> => {
-    const response = await api.get('/api/employee/job-recommendations', { params });
-    return response.data;
+    try {
+      const response = await api.get("/employee/job-recommendations", {
+        params,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("📡 Recommendations API error:", error);
+      throw error;
+    }
   },
 
   searchJobs: async (params: {
@@ -236,106 +290,53 @@ export const employeeService = {
     min_salary?: number;
     max_salary?: number;
     skills?: string;
+    department?: string;
     limit?: number;
     offset?: number;
-  }): Promise<JobPosting[]> => {
-    const response = await api.get('/api/employee/jobs/search', { params });
+  }): Promise<JobSearchResponse> => {
+    const response = await api.get("/employee/jobs/search", { params });
     return response.data;
   },
 
   getJobDetails: async (jobId: number): Promise<JobPosting> => {
-    const response = await api.get(`/api/employee/jobs/${jobId}`);
+    const response = await api.get(`/employee/jobs/${jobId}`);
     return response.data;
   },
 
   // Skills and analysis
   getSkillsAnalysis: async (): Promise<any> => {
-    const response = await api.get('/api/employee/skills-analysis');
+    const response = await api.get("/employee/skills-analysis");
     return response.data;
   },
 
   analyzeJobMatch: async (jobId: number, resumeId?: number): Promise<any> => {
-    const response = await api.post(`/api/employee/analyze-job-match/${jobId}`, {
-      resume_id: resumeId
+    const response = await api.post(`/employee/analyze-job-match/${jobId}`, {
+      resume_id: resumeId,
     });
     return response.data;
   },
 
   // Profile management
   getProfile: async (): Promise<any> => {
-    const response = await api.get('/api/employee/profile');
+    const response = await api.get("/employee/profile");
     return response.data;
   },
 
   updateProfile: async (profileData: any): Promise<any> => {
-    const response = await api.put('/api/employee/profile', profileData);
+    const response = await api.put("/employee/profile", profileData);
     return response.data;
   },
 
-  // Learning and assessments
-  getAssessments: async (): Promise<any[]> => {
-    const response = await api.get('/api/employee/assessments');
-    return response.data;
-  },
 
-  takeAssessment: async (assessmentId: number, answers: any): Promise<any> => {
-    const response = await api.post(`/api/employee/assessments/${assessmentId}/take`, answers);
-    return response.data;
-  },
-
-  getLearningPaths: async (): Promise<any[]> => {
-    const response = await api.get('/api/employee/learning-paths');
-    return response.data;
-  },
-
-  enrollInLearningPath: async (pathId: number): Promise<any> => {
-    const response = await api.post(`/api/employee/learning-paths/${pathId}/enroll`);
-    return response.data;
-  },
-
-  // Messages and notifications
-  getMessages: async (params?: {
-    type?: 'received' | 'sent';
-    unread_only?: boolean;
-    limit?: number;
-  }): Promise<any[]> => {
-    const response = await api.get('/api/employee/messages', { params });
-    return response.data;
-  },
-
-  sendMessage: async (messageData: {
-    recipient_id: number;
-    subject: string;
-    content: string;
-  }): Promise<any> => {
-    const response = await api.post('/api/employee/messages', messageData);
-    return response.data;
-  },
-
-  markMessageAsRead: async (messageId: number): Promise<void> => {
-    await api.put(`/api/employee/messages/${messageId}/read`);
-  },
-
-  getNotifications: async (params?: {
-    unread_only?: boolean;
-    limit?: number;
-  }): Promise<any[]> => {
-    const response = await api.get('/api/employee/notifications', { params });
-    return response.data;
-  },
-
-  markNotificationAsRead: async (notificationId: number): Promise<void> => {
-    await api.put(`/api/employee/notifications/${notificationId}/read`);
-  },
 
   // Settings
   getSettings: async (): Promise<any> => {
-    const response = await api.get('/api/employee/settings');
+    const response = await api.get("/employee/settings");
     return response.data;
   },
 
   updateSettings: async (settings: any): Promise<any> => {
-    const response = await api.put('/api/employee/settings', settings);
+    const response = await api.put("/employee/settings", settings);
     return response.data;
   },
 };

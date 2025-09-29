@@ -18,8 +18,6 @@ import {
 } from "lucide-react";
 
 export const LandingPage: React.FC = () => {
-  console.log('LandingPage component is rendering!');
-
   const features = [
     {
       icon: Brain,
@@ -83,21 +81,21 @@ export const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-lg border-b border-gray-200 z-50">
+      <nav className="fixed top-0 w-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
                 <Zap className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-gray-800">AI Resume</span>
+              <span className="text-xl font-bold text-gray-800 dark:text-gray-100">AI Resume</span>
             </div>
             <div className="flex items-center gap-4">
               <Link
                 to="/login"
-                className="text-gray-600 hover:text-gray-800 transition-colors"
+                className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
               >
                 Sign In
               </Link>
@@ -119,7 +117,7 @@ export const LandingPage: React.FC = () => {
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-6xl font-bold text-gray-900 mb-6"
+              className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-gray-100 mb-6"
             >
               The Future of{" "}
               <span className="bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent">
@@ -130,7 +128,7 @@ export const LandingPage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto"
+              className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto"
             >
               Connect talent with opportunity using AI-powered matching. Whether
               you're seeking your next role or building your dream team, we make
@@ -151,7 +149,7 @@ export const LandingPage: React.FC = () => {
               </Link>
               <Link
                 to="/register"
-                className="bg-white text-primary-600 px-8 py-4 rounded-xl border-2 border-primary-600 hover:bg-primary-50 transition-colors font-medium flex items-center justify-center gap-2"
+                className="bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 px-8 py-4 rounded-xl border-2 border-primary-600 dark:border-primary-400 hover:bg-primary-50 dark:hover:bg-gray-700 transition-colors font-medium flex items-center justify-center gap-2"
               >
                 <Briefcase className="w-5 h-5" />
                 Find Jobs
@@ -162,13 +160,13 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
               Why Choose AI Resume?
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               Experience the next generation of recruitment technology designed
               for modern professionals.
             </p>
@@ -180,15 +178,15 @@ export const LandingPage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm hover:shadow-md dark:shadow-gray-900 transition-shadow"
               >
-                <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
-                  <feature.icon className="w-6 h-6 text-primary-600" />
+                <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center mb-4">
+                  <feature.icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600">{feature.description}</p>
+                <p className="text-gray-600 dark:text-gray-300">{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -203,38 +201,38 @@ export const LandingPage: React.FC = () => {
               <div className="text-4xl font-bold text-primary-600 mb-2">
                 50K+
               </div>
-              <div className="text-gray-600">Active Users</div>
+              <div className="text-gray-600 dark:text-gray-300">Active Users</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-primary-600 mb-2">
                 15K+
               </div>
-              <div className="text-gray-600">Jobs Posted</div>
+              <div className="text-gray-600 dark:text-gray-300">Jobs Posted</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-primary-600 mb-2">
                 95%
               </div>
-              <div className="text-gray-600">Match Accuracy</div>
+              <div className="text-gray-600 dark:text-gray-300">Match Accuracy</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-primary-600 mb-2">
                 2.5K+
               </div>
-              <div className="text-gray-600">Companies</div>
+              <div className="text-gray-600 dark:text-gray-300">Companies</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Testimonials */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
               What Our Users Say
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-600 dark:text-gray-300">
               Join thousands of professionals who found success with AI Resume.
             </p>
           </div>
@@ -245,7 +243,7 @@ export const LandingPage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.2 }}
-                className="bg-white p-6 rounded-xl shadow-sm"
+                className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm dark:shadow-gray-900"
               >
                 <div className="flex gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
@@ -255,12 +253,12 @@ export const LandingPage: React.FC = () => {
                     />
                   ))}
                 </div>
-                <p className="text-gray-600 mb-4">"{testimonial.content}"</p>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">"{testimonial.content}"</p>
                 <div>
-                  <div className="font-semibold text-gray-900">
+                  <div className="font-semibold text-gray-900 dark:text-gray-100">
                     {testimonial.name}
                   </div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
                     {testimonial.role} at {testimonial.company}
                   </div>
                 </div>
@@ -282,7 +280,7 @@ export const LandingPage: React.FC = () => {
           </p>
           <Link
             to="/register"
-            className="bg-white text-primary-600 px-8 py-4 rounded-xl hover:bg-gray-100 transition-colors font-medium inline-flex items-center gap-2"
+            className="bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 px-8 py-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-medium inline-flex items-center gap-2"
           >
             Get Started Free
             <ArrowRight className="w-5 h-5" />

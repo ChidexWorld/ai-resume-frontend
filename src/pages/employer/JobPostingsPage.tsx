@@ -61,12 +61,9 @@ export const JobPostingsPage: React.FC = () => {
   const averageApplications = totalJobs > 0 ? Math.round(totalApplications / totalJobs) : 0;
 
   const handleDeleteJob = async (jobId: number) => {
-    console.log('handleDeleteJob called with jobId:', jobId);
     if (window.confirm('Are you sure you want to delete this job posting? This action cannot be undone.')) {
       try {
-        console.log('Calling employerService.deleteJobPosting...');
         await employerService.deleteJobPosting(jobId);
-        console.log('Delete successful');
         toast.success('Job posting deleted successfully');
         refetch();
       } catch (error: any) {
@@ -80,7 +77,6 @@ export const JobPostingsPage: React.FC = () => {
           errorMessage = error.message;
         }
 
-        console.error('Job deletion error:', error);
         toast.error(errorMessage);
       }
     }
@@ -136,7 +132,7 @@ export const JobPostingsPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Job Postings</h1>
-          <p className="text-gray-600 mt-1 text-sm md:text-base">
+          <p className="text-gray-600 dark:text-gray-300 dark:text-gray-600 mt-1 text-sm md:text-base">
             Manage your job listings and track applications
           </p>
         </div>
@@ -151,13 +147,13 @@ export const JobPostingsPage: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
           <div className="flex items-center">
             <div className="p-2 bg-blue-100 rounded-lg flex-shrink-0">
               <Briefcase className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
             </div>
             <div className="ml-3 min-w-0 flex-1">
-              <p className="text-xs md:text-sm font-medium text-gray-500 truncate">Total Jobs</p>
+              <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate">Total Jobs</p>
               {isLoading ? (
                 <div className="w-8 h-6 md:w-12 md:h-8 bg-gray-200 animate-pulse rounded"></div>
               ) : (
@@ -167,13 +163,13 @@ export const JobPostingsPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
           <div className="flex items-center">
             <div className="p-2 bg-green-100 rounded-lg flex-shrink-0">
               <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
             </div>
             <div className="ml-3 min-w-0 flex-1">
-              <p className="text-xs md:text-sm font-medium text-gray-500 truncate">Active Jobs</p>
+              <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate">Active Jobs</p>
               {isLoading ? (
                 <div className="w-8 h-6 md:w-12 md:h-8 bg-gray-200 animate-pulse rounded"></div>
               ) : (
@@ -183,13 +179,13 @@ export const JobPostingsPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
           <div className="flex items-center">
             <div className="p-2 bg-purple-100 rounded-lg flex-shrink-0">
               <Users className="w-5 h-5 md:w-6 md:h-6 text-purple-600" />
             </div>
             <div className="ml-3 min-w-0 flex-1">
-              <p className="text-xs md:text-sm font-medium text-gray-500 truncate">Total Applications</p>
+              <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate">Total Applications</p>
               {isLoading ? (
                 <div className="w-8 h-6 md:w-12 md:h-8 bg-gray-200 animate-pulse rounded"></div>
               ) : (
@@ -199,13 +195,13 @@ export const JobPostingsPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
           <div className="flex items-center">
             <div className="p-2 bg-orange-100 rounded-lg flex-shrink-0">
               <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-orange-600" />
             </div>
             <div className="ml-3 min-w-0 flex-1">
-              <p className="text-xs md:text-sm font-medium text-gray-500 truncate">Avg. Applications</p>
+              <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate">Avg. Applications</p>
               {isLoading ? (
                 <div className="w-8 h-6 md:w-12 md:h-8 bg-gray-200 animate-pulse rounded"></div>
               ) : (
@@ -217,17 +213,17 @@ export const JobPostingsPage: React.FC = () => {
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search jobs by title, description, or location..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
           </div>
@@ -238,7 +234,7 @@ export const JobPostingsPage: React.FC = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
@@ -252,7 +248,7 @@ export const JobPostingsPage: React.FC = () => {
       </div>
 
       {/* Job Listings */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200">
         {isLoading ? (
           <div className="p-12 text-center">
             <div className="animate-spin w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full mx-auto mb-4"></div>
@@ -273,11 +269,11 @@ export const JobPostingsPage: React.FC = () => {
           </div>
         ) : (
           <div className="p-12 text-center">
-            <Briefcase className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <Briefcase className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
               {searchTerm || statusFilter !== 'all' ? 'No jobs found' : 'No job postings yet'}
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 dark:text-gray-300 dark:text-gray-600 mb-6">
               {searchTerm || statusFilter !== 'all'
                 ? 'Try adjusting your search criteria'
                 : 'Get started by creating your first job posting'}
@@ -391,7 +387,7 @@ const JobCard: React.FC<JobCardProps> = ({
   };
 
   return (
-    <div className="p-4 md:p-6 hover:bg-gray-50 transition-colors border-b border-gray-200 last:border-b-0">
+    <div className="p-4 md:p-6 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 transition-colors border-b border-gray-200 dark:border-gray-700 last:border-b-0">
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
@@ -407,7 +403,7 @@ const JobCard: React.FC<JobCardProps> = ({
             )}
           </div>
 
-          <p className="text-gray-600 mb-4 text-sm leading-relaxed" style={{
+          <p className="text-gray-600 dark:text-gray-300 dark:text-gray-600 mb-4 text-sm leading-relaxed" style={{
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
@@ -415,7 +411,7 @@ const JobCard: React.FC<JobCardProps> = ({
             wordBreak: 'break-word'
           }}>{job.description}</p>
 
-          <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm text-gray-600 mb-4">
+          <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm text-gray-600 dark:text-gray-300 dark:text-gray-600 mb-4">
             <div className="flex items-center gap-1">
               <MapPin className="w-4 h-4" />
               {job.location}
@@ -457,7 +453,7 @@ const JobCard: React.FC<JobCardProps> = ({
                   </span>
                 ))}
                 {job.required_skills.length > 5 && (
-                  <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">
+                  <span className="px-2 py-1 bg-gray-100 text-gray-600 dark:text-gray-300 dark:text-gray-600 rounded text-xs">
                     +{job.required_skills.length - 5} more
                   </span>
                 )}
@@ -468,7 +464,7 @@ const JobCard: React.FC<JobCardProps> = ({
           <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm">
             <button
               onClick={onViewApplications}
-              className="flex items-center gap-1 text-blue-600 hover:text-blue-700 transition-colors font-medium"
+              className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors font-medium"
             >
               <Users className="w-3 h-3 md:w-4 md:h-4" />
               <span className="hidden sm:inline">View Applications</span>
@@ -481,19 +477,19 @@ const JobCard: React.FC<JobCardProps> = ({
         <div className="relative ml-2 md:ml-4 flex-shrink-0">
           <button
             onClick={() => setShowActions(!showActions)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
             <MoreHorizontal className="w-4 h-4" />
           </button>
 
           {showActions && (
-            <div className="absolute right-0 top-10 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-20">
+            <div className="absolute right-0 top-10 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-20">
               <button
                 onClick={() => {
                   onView();
                   setShowActions(false);
                 }}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 flex items-center gap-2"
               >
                 <Eye className="w-4 h-4" />
                 View Details
@@ -504,21 +500,21 @@ const JobCard: React.FC<JobCardProps> = ({
                   onEdit();
                   setShowActions(false);
                 }}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 flex items-center gap-2"
               >
                 <Edit className="w-4 h-4" />
                 Edit Job
               </button>
 
               {job.status === 'active' && (
-                <button className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2">
+                <button className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 flex items-center gap-2">
                   <Pause className="w-4 h-4" />
                   Pause Job
                 </button>
               )}
 
               {job.status === 'paused' && (
-                <button className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2">
+                <button className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 flex items-center gap-2">
                   <Play className="w-4 h-4" />
                   Activate Job
                 </button>
@@ -556,7 +552,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, onClose }) => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
       >
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
@@ -566,7 +562,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({ job, onClose }) => {
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               ✕
             </button>

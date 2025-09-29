@@ -138,7 +138,7 @@ export const InterviewsPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Interviews & Calendar</h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-gray-600 dark:text-gray-300 dark:text-gray-600 mt-1">
             Manage your interview schedule and candidate meetings
           </p>
         </div>
@@ -148,8 +148,8 @@ export const InterviewsPage: React.FC = () => {
               onClick={() => setViewMode('calendar')}
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 viewMode === 'calendar'
-                  ? 'bg-white text-primary-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-white dark:bg-gray-800 text-primary-600 shadow-sm'
+                  : 'text-gray-600 dark:text-gray-300 dark:text-gray-600 hover:text-gray-900'
               }`}
             >
               <Calendar className="w-4 h-4" />
@@ -158,8 +158,8 @@ export const InterviewsPage: React.FC = () => {
               onClick={() => setViewMode('list')}
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 viewMode === 'list'
-                  ? 'bg-white text-primary-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-white dark:bg-gray-800 text-primary-600 shadow-sm'
+                  : 'text-gray-600 dark:text-gray-300 dark:text-gray-600 hover:text-gray-900'
               }`}
             >
               <Users className="w-4 h-4" />
@@ -190,7 +190,7 @@ export const InterviewsPage: React.FC = () => {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             <option value="all">All Interviews</option>
             <option value="scheduled">Scheduled</option>
@@ -241,7 +241,7 @@ export const InterviewsPage: React.FC = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="bg-white rounded-lg shadow-sm border border-gray-200"
+          className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200"
         >
           {/* Calendar Header */}
           <div className="p-6 border-b border-gray-200">
@@ -252,7 +252,7 @@ export const InterviewsPage: React.FC = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -264,7 +264,7 @@ export const InterviewsPage: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -277,7 +277,7 @@ export const InterviewsPage: React.FC = () => {
             {/* Week Headers */}
             <div className="grid grid-cols-7 gap-4 mb-4">
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
+                <div key={day} className="text-center text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 py-2">
                   {day}
                 </div>
               ))}
@@ -298,7 +298,7 @@ export const InterviewsPage: React.FC = () => {
                     className={`min-h-[100px] p-2 border rounded-lg cursor-pointer transition-all ${
                       isSelected
                         ? 'border-primary-500 bg-primary-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                     } ${
                       !isSameMonth(day, currentMonth) ? 'opacity-30' : ''
                     }`}
@@ -332,7 +332,7 @@ export const InterviewsPage: React.FC = () => {
 
           {/* Selected Date Details */}
           {selectedDate && (
-            <div className="border-t border-gray-200 p-6">
+            <div className="border-t border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold mb-4">
                 Interviews for {format(selectedDate, 'EEEE, MMMM d, yyyy')}
               </h3>
@@ -352,7 +352,7 @@ export const InterviewsPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <Calendar className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
                   <p className="text-gray-500">No interviews scheduled for this date</p>
                 </div>
               )}
@@ -366,7 +366,7 @@ export const InterviewsPage: React.FC = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="bg-white rounded-lg shadow-sm border border-gray-200"
+          className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200"
         >
           <div className="p-6 border-b border-gray-200">
             <h2 className="text-xl font-semibold">All Interviews</h2>
@@ -375,7 +375,7 @@ export const InterviewsPage: React.FC = () => {
           {interviewsLoading ? (
             <div className="p-6 text-center">
               <div className="animate-spin w-6 h-6 border-2 border-primary-600 border-t-transparent rounded-full mx-auto"></div>
-              <p className="text-gray-500 mt-2">Loading interviews...</p>
+              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-2">Loading interviews...</p>
             </div>
           ) : filteredInterviews.length > 0 ? (
             <div className="divide-y divide-gray-200">
@@ -463,7 +463,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
   };
 
   return (
-    <div className="p-4 hover:bg-gray-50 transition-colors">
+    <div className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 transition-colors">
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
@@ -476,7 +476,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
+          <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300 dark:text-gray-600 mb-2">
             {showDate && (
               <div className="flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
@@ -506,7 +506,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
         <div className="flex items-center gap-2 ml-4">
           <button
             onClick={onViewDetails}
-            className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+            className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:text-gray-300 dark:text-gray-600 transition-colors"
           >
             <Eye className="w-4 h-4" />
           </button>
@@ -549,14 +549,14 @@ const InterviewDetailModal: React.FC<InterviewDetailModalProps> = ({
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
       >
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-900">Interview Details</h2>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               ✕
             </button>
@@ -612,7 +612,7 @@ const InterviewDetailModal: React.FC<InterviewDetailModalProps> = ({
           {interview.notes && (
             <div>
               <h3 className="text-lg font-semibold mb-2">Notes</h3>
-              <p className="text-gray-700 bg-gray-50 p-3 rounded-lg">{interview.notes}</p>
+              <p className="text-gray-700 bg-gray-50 dark:bg-gray-900 p-3 rounded-lg">{interview.notes}</p>
             </div>
           )}
 

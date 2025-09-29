@@ -122,7 +122,7 @@ export const SearchPage: React.FC = () => {
   };
 
   const getCommunicationColor = (score: number | undefined) => {
-    if (!score) return 'text-gray-600 bg-gray-100';
+    if (!score) return 'text-gray-600 dark:text-gray-300 dark:text-gray-600 bg-gray-100';
     if (score >= 80) return 'text-green-600 bg-green-100';
     if (score >= 60) return 'text-yellow-600 bg-yellow-100';
     return 'text-red-600 bg-red-100';
@@ -134,7 +134,7 @@ export const SearchPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Talent Hunt</h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-gray-600 dark:text-gray-300 dark:text-gray-600 mt-1">
             Search candidates, get AI recommendations, and auto-score applications
           </p>
         </div>
@@ -161,11 +161,11 @@ export const SearchPage: React.FC = () => {
       <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg shadow-sm border border-purple-200 p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
               <Award className="w-5 h-5 text-purple-600" />
               AI-Powered Tools
             </h2>
-            <p className="text-gray-600 text-sm mt-1">
+            <p className="text-gray-600 dark:text-gray-300 dark:text-gray-600 text-sm mt-1">
               Get AI recommendations and auto-score applications for your job postings
             </p>
           </div>
@@ -180,7 +180,7 @@ export const SearchPage: React.FC = () => {
             <select
               value={selectedJobId || ''}
               onChange={(e) => setSelectedJobId(e.target.value ? parseInt(e.target.value) : null)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
               <option value="">Choose a job posting...</option>
               {jobPostings?.map((job) => (
@@ -224,7 +224,7 @@ export const SearchPage: React.FC = () => {
         transition={{ duration: 0.3 }}
         className="overflow-hidden"
       >
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -235,7 +235,7 @@ export const SearchPage: React.FC = () => {
                 value={searchFilters.skills}
                 onChange={(e) => setSearchFilters(prev => ({ ...prev, skills: e.target.value }))}
                 placeholder="React, Python, Machine Learning"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
 
@@ -246,7 +246,7 @@ export const SearchPage: React.FC = () => {
               <select
                 value={searchFilters.experience_level}
                 onChange={(e) => setSearchFilters(prev => ({ ...prev, experience_level: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">Any Level</option>
                 <option value="entry">Entry Level</option>
@@ -269,7 +269,7 @@ export const SearchPage: React.FC = () => {
                   ...prev,
                   min_experience_years: parseInt(e.target.value) || 0
                 }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
 
@@ -282,7 +282,7 @@ export const SearchPage: React.FC = () => {
                 value={searchFilters.location}
                 onChange={(e) => setSearchFilters(prev => ({ ...prev, location: e.target.value }))}
                 placeholder="New York, Remote, etc."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
 
@@ -299,7 +299,7 @@ export const SearchPage: React.FC = () => {
                   ...prev,
                   min_communication_score: parseInt(e.target.value) || 0
                 }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
 
@@ -313,7 +313,7 @@ export const SearchPage: React.FC = () => {
                   ...prev,
                   limit: parseInt(e.target.value)
                 }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value={10}>10 results</option>
                 <option value={20}>20 results</option>
@@ -338,7 +338,7 @@ export const SearchPage: React.FC = () => {
 
       {/* Results */}
       {candidates && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200">
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-gray-900">
@@ -357,7 +357,7 @@ export const SearchPage: React.FC = () => {
                 key={candidate.employee.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-6 hover:bg-gray-50 transition-colors"
+                className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 transition-colors"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -424,7 +424,7 @@ export const SearchPage: React.FC = () => {
                             </span>
                           ))}
                           {candidate.match_summary.skills_match.length > 6 && (
-                            <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-md text-xs font-medium">
+                            <span className="px-2 py-1 bg-gray-100 text-gray-600 dark:text-gray-300 dark:text-gray-600 rounded-md text-xs font-medium">
                               +{candidate.match_summary.skills_match.length - 6} more
                             </span>
                           )}
@@ -433,7 +433,7 @@ export const SearchPage: React.FC = () => {
                     )}
 
                     {candidate.resume_analysis.summary && (
-                      <p className="text-sm text-gray-600 line-clamp-2">
+                      <p className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-600 line-clamp-2">
                         {candidate.resume_analysis.summary}
                       </p>
                     )}
@@ -473,10 +473,10 @@ export const SearchPage: React.FC = () => {
 
       {/* AI Recommendations */}
       {showAIRecommendations && selectedJobId && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200">
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-purple-600" />
                 AI Candidate Recommendations
                 {jobPostings && (
@@ -487,7 +487,7 @@ export const SearchPage: React.FC = () => {
               </h2>
               <button
                 onClick={() => setShowAIRecommendations(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600"
               >
                 ✕
               </button>
@@ -536,7 +536,7 @@ export const SearchPage: React.FC = () => {
                       {/* AI Matching Details */}
                       {candidate.match_summary.ai_matching_details && (
                         <div className="mb-4 p-3 bg-purple-50 rounded-lg">
-                          <h4 className="text-sm font-medium text-gray-900 mb-2">AI Analysis:</h4>
+                          <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">AI Analysis:</h4>
                           {candidate.match_summary.strengths && candidate.match_summary.strengths.length > 0 && (
                             <div className="mb-2">
                               <span className="text-xs font-medium text-green-700">Strengths:</span>
@@ -618,8 +618,8 @@ export const SearchPage: React.FC = () => {
             </div>
           ) : (
             <div className="p-12 text-center">
-              <TrendingUp className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <TrendingUp className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 No AI recommendations found
               </h3>
               <p className="text-gray-600">
@@ -632,12 +632,12 @@ export const SearchPage: React.FC = () => {
 
       {/* Empty State */}
       {!candidates && !isLoading && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-          <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
+          <Users className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
             Search for Candidates
           </h3>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 dark:text-gray-300 dark:text-gray-600 mb-6">
             Use the filters above to search through our talent pool and find the perfect candidates for your roles.
           </p>
           <button
@@ -656,7 +656,7 @@ export const SearchPage: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
           >
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
@@ -665,7 +665,7 @@ export const SearchPage: React.FC = () => {
                 </h2>
                 <button
                   onClick={() => setSelectedCandidate(null)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                 >
                   ✕
                 </button>

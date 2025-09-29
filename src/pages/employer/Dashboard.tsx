@@ -145,7 +145,7 @@ export const EmployerDashboard: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
+            className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
           >
             <div className="flex items-center justify-between">
               <div className={`p-3 rounded-lg ${
@@ -179,7 +179,7 @@ export const EmployerDashboard: React.FC = () => {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
-          className="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm"
+          className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
         >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-800">
@@ -187,7 +187,7 @@ export const EmployerDashboard: React.FC = () => {
             </h2>
             <Link
               to="/employer/jobs"
-              className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium flex items-center gap-1"
             >
               View All <ArrowRight className="w-4 h-4" />
             </Link>
@@ -202,7 +202,7 @@ export const EmployerDashboard: React.FC = () => {
               recentJobs.map((job) => (
                 <div
                   key={job.id}
-                  className="flex items-center gap-4 p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-4 p-4 border border-gray-100 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 transition-colors"
                 >
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                     <Briefcase className="w-6 h-6 text-blue-600" />
@@ -249,7 +249,7 @@ export const EmployerDashboard: React.FC = () => {
                 <p>No job postings yet</p>
                 <Link
                   to="/employer/jobs"
-                  className="text-blue-600 hover:text-blue-700 text-sm mt-2 inline-block"
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm mt-2 inline-block"
                 >
                   Create your first job posting
                 </Link>
@@ -263,7 +263,7 @@ export const EmployerDashboard: React.FC = () => {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white rounded-xl p-6 shadow-sm"
+          className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
         >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-800">Interviews</h2>
@@ -283,12 +283,12 @@ export const EmployerDashboard: React.FC = () => {
                     }`}
                   />
                   <div className="flex-1">
-                    <p className="font-medium text-gray-800 text-sm">
+                    <p className="font-medium text-gray-800 dark:text-gray-100 text-sm">
                       {interview.candidate}
                     </p>
                     <p className="text-xs text-gray-600">{interview.position}</p>
                     <p className="text-xs text-gray-500">{interview.time}</p>
-                    <span className="inline-block mt-1 px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
+                    <span className="inline-block mt-1 px-2 py-1 bg-gray-100 text-gray-600 dark:text-gray-300 dark:text-gray-600 text-xs rounded">
                       {interview.type}
                     </span>
                   </div>
@@ -304,7 +304,7 @@ export const EmployerDashboard: React.FC = () => {
           </div>
           <Link
             to="/employer/interviews"
-            className="w-full mt-4 py-2 text-blue-600 hover:text-blue-700 text-sm font-medium border border-blue-200 hover:border-blue-300 rounded-lg transition-colors block text-center"
+            className="w-full mt-4 py-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium border border-blue-200 hover:border-blue-300 rounded-lg transition-colors block text-center"
           >
             View Calendar
           </Link>
@@ -316,19 +316,19 @@ export const EmployerDashboard: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="bg-white rounded-xl p-6 shadow-sm"
+        className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-gray-800">
             Top Candidates
           </h2>
           <div className="flex gap-2">
-            <button className="p-2 text-gray-400 hover:text-gray-600 border border-gray-300 rounded-lg">
+            <button className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:text-gray-300 dark:text-gray-600 border border-gray-300 dark:border-gray-600 rounded-lg">
               <Filter className="w-4 h-4" />
             </button>
             <Link
               to="/employer/candidates"
-              className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium flex items-center gap-1"
             >
               View All <ArrowRight className="w-4 h-4" />
             </Link>
@@ -339,7 +339,7 @@ export const EmployerDashboard: React.FC = () => {
             Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={index}
-                className="border border-gray-200 rounded-lg p-4 animate-pulse"
+                className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 animate-pulse"
               >
                 <div className="h-4 bg-gray-200 rounded mb-2"></div>
                 <div className="h-3 bg-gray-200 rounded mb-4 w-2/3"></div>
@@ -354,7 +354,7 @@ export const EmployerDashboard: React.FC = () => {
             topCandidates.map((candidate) => (
               <div
                 key={candidate.employee.id}
-                className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
@@ -390,12 +390,12 @@ export const EmployerDashboard: React.FC = () => {
                     {candidate.resume_analysis?.skills?.slice(0, 3).map((skill: string) => (
                       <span
                         key={skill}
-                        className="px-2 py-1 bg-gray-100 text-xs text-gray-600 rounded"
+                        className="px-2 py-1 bg-gray-100 text-xs text-gray-600 dark:text-gray-300 dark:text-gray-600 rounded"
                       >
                         {skill}
                       </span>
                     )) || (
-                      <span className="px-2 py-1 bg-gray-100 text-xs text-gray-500 rounded">
+                      <span className="px-2 py-1 bg-gray-100 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 rounded">
                         No skills listed
                       </span>
                     )}
@@ -405,7 +405,7 @@ export const EmployerDashboard: React.FC = () => {
                   <button className="flex-1 py-2 px-3 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
                     View Profile
                   </button>
-                  <button className="p-2 text-gray-400 hover:text-gray-600 border border-gray-300 rounded-lg">
+                  <button className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:text-gray-300 dark:text-gray-600 border border-gray-300 dark:border-gray-600 rounded-lg">
                     <MessageSquare className="w-4 h-4" />
                   </button>
                 </div>
@@ -417,7 +417,7 @@ export const EmployerDashboard: React.FC = () => {
               <p>No candidates available</p>
               <Link
                 to="/employer/search"
-                className="text-blue-600 hover:text-blue-700 text-sm mt-2 inline-block"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm mt-2 inline-block"
               >
                 Search for candidates
               </Link>
@@ -431,52 +431,52 @@ export const EmployerDashboard: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="bg-white rounded-xl p-6 shadow-sm"
+        className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
       >
-        <h2 className="text-xl font-semibold text-gray-800 mb-6">Quick Actions</h2>
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6">Quick Actions</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Link
             to="/employer/candidates"
-            className="flex flex-col items-center p-4 rounded-lg border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all"
+            className="flex flex-col items-center p-4 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-blue-300 hover:bg-blue-50 transition-all"
           >
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
               <Users className="w-6 h-6 text-blue-600" />
             </div>
             <span className="text-sm font-medium text-gray-700">View All Candidates</span>
-            <span className="text-xs text-gray-500 mt-1">Browse talent pool</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Browse talent pool</span>
           </Link>
 
           <Link
             to="/employer/search"
-            className="flex flex-col items-center p-4 rounded-lg border-2 border-gray-200 hover:border-green-300 hover:bg-green-50 transition-all"
+            className="flex flex-col items-center p-4 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-green-300 hover:bg-green-50 transition-all"
           >
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-3">
               <Search className="w-6 h-6 text-green-600" />
             </div>
             <span className="text-sm font-medium text-gray-700">Search Candidates</span>
-            <span className="text-xs text-gray-500 mt-1">AI-powered search</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">AI-powered search</span>
           </Link>
 
           <Link
             to="/employer/interviews"
-            className="flex flex-col items-center p-4 rounded-lg border-2 border-gray-200 hover:border-purple-300 hover:bg-purple-50 transition-all"
+            className="flex flex-col items-center p-4 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-purple-300 hover:bg-purple-50 transition-all"
           >
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
               <Calendar className="w-6 h-6 text-purple-600" />
             </div>
             <span className="text-sm font-medium text-gray-700">Schedule Interview</span>
-            <span className="text-xs text-gray-500 mt-1">Manage calendar</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Manage calendar</span>
           </Link>
 
           <Link
             to="/employer/jobs"
-            className="flex flex-col items-center p-4 rounded-lg border-2 border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all"
+            className="flex flex-col items-center p-4 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-orange-300 hover:bg-orange-50 transition-all"
           >
             <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-3">
               <Plus className="w-6 h-6 text-orange-600" />
             </div>
             <span className="text-sm font-medium text-gray-700">Post New Job</span>
-            <span className="text-xs text-gray-500 mt-1">Create listing</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Create listing</span>
           </Link>
         </div>
       </motion.div>
@@ -488,7 +488,7 @@ export const EmployerDashboard: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm"
+          className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
         >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-800">
@@ -500,7 +500,7 @@ export const EmployerDashboard: React.FC = () => {
             {analyticsData.map((metric) => (
               <div
                 key={metric.label}
-                className="p-4 border border-gray-200 rounded-lg"
+                className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg"
               >
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-gray-600">{metric.label}</p>
@@ -511,7 +511,7 @@ export const EmployerDashboard: React.FC = () => {
                     }`}
                   />
                 </div>
-                <p className="text-2xl font-bold text-gray-800 mt-2">
+                <p className="text-2xl font-bold text-gray-800 dark:text-gray-100 mt-2">
                   {metric.value}
                 </p>
               </div>
@@ -535,14 +535,14 @@ export const EmployerDashboard: React.FC = () => {
           </Link>
           <Link
             to="/employer/search"
-            className="w-full bg-white border-2 border-gray-300 p-4 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
+            className="w-full bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 p-4 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
           >
             <Search className="w-5 h-5" />
             Search Candidates
           </Link>
           <Link
             to="/employer/interviews"
-            className="w-full bg-white border-2 border-gray-300 p-4 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
+            className="w-full bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 p-4 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
           >
             <Calendar className="w-5 h-5" />
             Schedule Interview

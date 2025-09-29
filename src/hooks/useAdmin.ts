@@ -178,7 +178,6 @@ export const useMarkContentAsReviewed = () => {
     },
     onError: (error: ApiError) => {
       toast.error("Failed to update content status");
-      console.log(error)
     },
   });
 };

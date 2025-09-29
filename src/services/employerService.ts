@@ -1,25 +1,4 @@
-import axios from 'axios';
-import { API_BASE_URL } from '../utils/constants';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-});
-
-// Add auth token to requests
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('auth-storage');
-  if (token) {
-    try {
-      const parsed = JSON.parse(token);
-      if (parsed.state.token) {
-        config.headers.Authorization = `Bearer ${parsed.state.token}`;
-      }
-    } catch (error) {
-      console.error('Error parsing auth token:', error);
-    }
-  }
-  return config;
-});
+import { api } from './api';
 
 export interface JobPosting {
   id: number;
@@ -152,7 +131,7 @@ export interface Interview {
 export const employerService = {
   // Dashboard stats
   getDashboardStats: async (): Promise<DashboardStats> => {
-    const response = await api.get('/api/employer/dashboard/stats');
+    const response = await api.get('/employer/dashboard/stats');
     return response.data;
   },
 
@@ -162,7 +141,7 @@ export const employerService = {
     limit?: number;
     offset?: number;
   }): Promise<JobPosting[]> => {
-    const response = await api.get('/api/employer/jobs', { params });
+    const response = await api.get('/employer/jobs', { params });
     return response.data;
   },
 
@@ -172,7 +151,7 @@ export const employerService = {
   },
 
   createJobPosting: async (jobData: Partial<JobPosting>): Promise<JobPosting> => {
-    const response = await api.post('/api/employer/jobs', jobData);
+    const response = await api.post('/employer/jobs', jobData);
     return response.data;
   },
 
@@ -182,9 +161,7 @@ export const employerService = {
   },
 
   deleteJobPosting: async (jobId: number): Promise<void> => {
-    console.log('Deleting job with ID:', jobId);
     const response = await api.delete(`/api/employer/jobs/${jobId}`);
-    console.log('Delete response:', response);
     return response.data;
   },
 
@@ -236,7 +213,7 @@ export const employerService = {
     min_communication_score?: number;
     limit?: number;
   }): Promise<CandidateSearchResponse[]> => {
-    const response = await api.get('/api/employer/candidates/search', { params });
+    const response = await api.get('/employer/candidates/search', { params });
     return response.data;
   },
 
@@ -255,7 +232,7 @@ export const employerService = {
   getInterviews: async (): Promise<Interview[]> => {
     try {
       // First get all job postings
-      const jobsResponse = await api.get('/api/employer/jobs');
+      const jobsResponse = await api.get('/employer/jobs');
       const jobs = jobsResponse.data;
 
       const interviews: Interview[] = [];

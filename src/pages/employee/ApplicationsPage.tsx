@@ -140,8 +140,8 @@ export const ApplicationsPage: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">My Applications</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">My Applications</h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">
             Track the status of your job applications
           </p>
         </div>
@@ -152,16 +152,16 @@ export const ApplicationsPage: React.FC = () => {
         {applicationStats.map((stat) => (
           <div
             key={stat.label}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 p-4"
           >
-            <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-            <div className="text-sm text-gray-600">{stat.label}</div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stat.value}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-300">{stat.label}</div>
           </div>
         ))}
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 p-4">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-gray-400" />
@@ -180,18 +180,18 @@ export const ApplicationsPage: React.FC = () => {
               <option value="withdrawn">Withdrawn</option>
             </select>
           </div>
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-gray-600 dark:text-gray-300">
             Showing {filteredApplications.length} applications
           </div>
         </div>
       </div>
 
       {/* Applications List */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200">
         {isLoading ? (
           <div className="p-12 text-center">
             <div className="animate-spin w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading applications...</p>
+            <p className="text-gray-600 dark:text-gray-300">Loading applications...</p>
           </div>
         ) : filteredApplications.length > 0 ? (
           <div className="divide-y divide-gray-200">
@@ -210,10 +210,10 @@ export const ApplicationsPage: React.FC = () => {
         ) : (
           <div className="p-12 text-center">
             <Briefcase className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
               {statusFilter === 'all' ? 'No applications yet' : `No ${statusFilter} applications`}
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
               {statusFilter === 'all'
                 ? 'Start applying to jobs that match your skills and interests'
                 : `You don't have any ${statusFilter} applications at the moment`
@@ -268,16 +268,16 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <h3 className="text-lg font-semibold text-gray-900">{application.job_title}</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{application.job_title}</h3>
             <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(application.status)}`}>
               {getStatusIcon(application.status)}
               {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
             </div>
           </div>
 
-          <p className="text-gray-600 mb-3">{application.company_name}</p>
+          <p className="text-gray-600 dark:text-gray-300 mb-3">{application.company_name}</p>
 
-          <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+          <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300 mb-3">
             <div className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
               Applied {format(new Date(application.applied_at), 'MMM d, yyyy')}
@@ -363,13 +363,13 @@ const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
       >
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">{application.job_title}</h2>
-              <p className="text-gray-600">{application.company_name}</p>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{application.job_title}</h2>
+              <p className="text-gray-600 dark:text-gray-300">{application.company_name}</p>
             </div>
             <div className="flex items-center gap-3">
               <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(application.status)}`}>
@@ -392,24 +392,24 @@ const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
               <h3 className="text-lg font-semibold mb-4">Application Details</h3>
               <div className="space-y-3">
                 <div>
-                  <span className="text-sm text-gray-600">Applied Date:</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Applied Date:</span>
                   <p className="font-medium">{format(new Date(application.applied_at), 'EEEE, MMMM d, yyyy')}</p>
                 </div>
                 {application.match_score && (
                   <div>
-                    <span className="text-sm text-gray-600">Match Score:</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-300">Match Score:</span>
                     <p className="font-medium">{application.match_score}%</p>
                   </div>
                 )}
                 {application.resume_id && (
                   <div>
-                    <span className="text-sm text-gray-600">Resume:</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-300">Resume:</span>
                     <p className="font-medium">Resume #{application.resume_id}</p>
                   </div>
                 )}
                 {application.voice_analysis_id && (
                   <div>
-                    <span className="text-sm text-gray-600">Voice Analysis:</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-300">Voice Analysis:</span>
                     <p className="font-medium">Analysis #{application.voice_analysis_id}</p>
                   </div>
                 )}
@@ -420,18 +420,18 @@ const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
               <h3 className="text-lg font-semibold mb-4">Status Information</h3>
               <div className="space-y-3">
                 <div>
-                  <span className="text-sm text-gray-600">Current Status:</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Current Status:</span>
                   <p className="font-medium">{getStatusMessage(application.status)}</p>
                 </div>
                 {application.reviewed_at && (
                   <div>
-                    <span className="text-sm text-gray-600">Reviewed Date:</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-300">Reviewed Date:</span>
                     <p className="font-medium">{format(new Date(application.reviewed_at), 'MMMM d, yyyy')}</p>
                   </div>
                 )}
                 {application.interview_scheduled_at && (
                   <div>
-                    <span className="text-sm text-gray-600">Interview Scheduled:</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-300">Interview Scheduled:</span>
                     <p className="font-medium">{format(new Date(application.interview_scheduled_at), 'EEEE, MMMM d, yyyy \'at\' h:mm a')}</p>
                   </div>
                 )}

@@ -1,3 +1,4 @@
+import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -7,6 +8,7 @@ import {
 import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAuthStore } from "./store/authStore";
+import { initializeTheme } from "./store/themeStore";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 import { LoginPage } from "./pages/auth/LoginPage";
@@ -17,11 +19,14 @@ import { AdminDashboard } from "./pages/admin/Dashboard";
 import { LandingPage } from "./pages/LandingPage";
 import { ResumePage } from "./pages/employee/ResumePage";
 import { JobsPage } from "./pages/employee/JobsPage";
+import { JobDetailsPage } from "./pages/employee/JobDetailsPage";
+import { JobApplicationPage } from "./pages/employee/JobApplicationPage";
 import { ApplicationsPage } from "./pages/employee/ApplicationsPage";
 import { AssessmentsPage } from "./pages/employee/AssessmentsPage";
-import { MessagesPage } from "./pages/employee/MessagesPage";
 import { ProfilePage as EmployeeProfilePage } from "./pages/employee/ProfilePage";
 import { ProfilePage as EmployerProfilePage } from "./pages/employer/ProfilePage";
+import { SkillsAnalysisPage } from "./pages/employee/SkillsAnalysisPage";
+import { SettingsPage } from "./pages/employee/SettingsPage";
 import { SearchPage } from "./pages/employer/SearchPage";
 import { InterviewsPage } from "./pages/employer/InterviewsPage";
 import { JobPostingsPage } from "./pages/employer/JobPostingsPage";
@@ -41,6 +46,11 @@ const queryClient = new QueryClient({
 
 function App() {
   const { isAuthenticated, user } = useAuthStore();
+
+  // Initialize theme on app start
+  React.useEffect(() => {
+    initializeTheme();
+  }, []);
 
   // Helper function to get dashboard redirect path
   const getDashboardPath = (userType: UserType): string => {
@@ -96,13 +106,13 @@ function App() {
               <Route path="dashboard" element={<EmployeeDashboard />} />
               <Route path="resumes" element={<ResumePage />} />
               <Route path="jobs" element={<JobsPage />} />
+              <Route path="jobs/:jobId" element={<JobDetailsPage />} />
+              <Route path="jobs/:jobId/apply" element={<JobApplicationPage />} />
               <Route path="applications" element={<ApplicationsPage />} />
               <Route path="assessments" element={<AssessmentsPage />} />
-              <Route path="learning" element={<div>Learning Path Page</div>} />
-              <Route path="messages" element={<MessagesPage />} />
-              <Route path="notifications" element={<div>Notifications Page</div>} />
+              <Route path="skills-analysis" element={<SkillsAnalysisPage />} />
               <Route path="profile" element={<EmployeeProfilePage />} />
-              <Route path="settings" element={<div>Settings Page</div>} />
+              <Route path="settings" element={<SettingsPage />} />
             </Route>
 
             {/* Employer Routes */}

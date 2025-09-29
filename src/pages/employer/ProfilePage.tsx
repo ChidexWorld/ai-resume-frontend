@@ -180,7 +180,7 @@ export const ProfilePage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
@@ -217,7 +217,7 @@ export const ProfilePage: React.FC = () => {
       </div>
 
       {/* Personal Information */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-gray-900">Personal Information</h2>
           {!isEditing && (
@@ -246,7 +246,7 @@ export const ProfilePage: React.FC = () => {
                   type="text"
                   value={profileForm.first_name || ''}
                   onChange={(e) => setProfileForm(prev => ({ ...prev, first_name: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                   placeholder="Enter your first name"
                 />
               </div>
@@ -258,7 +258,7 @@ export const ProfilePage: React.FC = () => {
                   type="text"
                   value={profileForm.last_name || ''}
                   onChange={(e) => setProfileForm(prev => ({ ...prev, last_name: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                   placeholder="Enter your last name"
                 />
               </div>
@@ -272,7 +272,7 @@ export const ProfilePage: React.FC = () => {
                 type="tel"
                 value={profileForm.phone || ''}
                 onChange={(e) => setProfileForm(prev => ({ ...prev, phone: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="Enter your phone number"
               />
             </div>
@@ -285,7 +285,7 @@ export const ProfilePage: React.FC = () => {
                 type="text"
                 value={profileForm.company_name || ''}
                 onChange={(e) => setProfileForm(prev => ({ ...prev, company_name: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="Enter your company name"
               />
             </div>
@@ -298,7 +298,7 @@ export const ProfilePage: React.FC = () => {
                 type="url"
                 value={profileForm.company_website || ''}
                 onChange={(e) => setProfileForm(prev => ({ ...prev, company_website: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="https://www.company.com"
               />
             </div>
@@ -310,7 +310,7 @@ export const ProfilePage: React.FC = () => {
               <select
                 value={profileForm.company_size || ''}
                 onChange={(e) => setProfileForm(prev => ({ ...prev, company_size: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">Select company size</option>
                 <option value="1-10">1-10 employees</option>
@@ -333,7 +333,7 @@ export const ProfilePage: React.FC = () => {
               </button>
               <button
                 onClick={handleCancelEdit}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 transition-colors"
               >
                 <X className="w-4 h-4" />
                 Cancel
@@ -408,11 +408,11 @@ export const ProfilePage: React.FC = () => {
       </div>
 
       {/* Security Settings */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Security Settings</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-6">Security Settings</h2>
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+          <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
             <div className="flex items-center gap-3">
               <Shield className="w-5 h-5 text-gray-400" />
               <div>
@@ -433,7 +433,7 @@ export const ProfilePage: React.FC = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="border border-gray-200 rounded-lg p-4 space-y-4"
+              className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-4"
             >
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -444,13 +444,13 @@ export const ProfilePage: React.FC = () => {
                     type={showPasswords.current ? 'text' : 'password'}
                     value={passwordForm.currentPassword}
                     onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
-                    className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="Enter your current password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPasswords(prev => ({ ...prev, current: !prev.current }))}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600"
                   >
                     {showPasswords.current ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -466,13 +466,13 @@ export const ProfilePage: React.FC = () => {
                     type={showPasswords.new ? 'text' : 'password'}
                     value={passwordForm.newPassword}
                     onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
-                    className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="Enter your new password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPasswords(prev => ({ ...prev, new: !prev.new }))}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600"
                   >
                     {showPasswords.new ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -488,13 +488,13 @@ export const ProfilePage: React.FC = () => {
                     type={showPasswords.confirm ? 'text' : 'password'}
                     value={passwordForm.confirmPassword}
                     onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                    className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="Confirm your new password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPasswords(prev => ({ ...prev, confirm: !prev.confirm }))}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600"
                   >
                     {showPasswords.confirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -515,7 +515,7 @@ export const ProfilePage: React.FC = () => {
                     setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
                     setShowPasswords({ current: false, new: false, confirm: false });
                   }}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 transition-colors"
                 >
                   Cancel
                 </button>
@@ -551,7 +551,7 @@ export const ProfilePage: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg max-w-md w-full p-6"
+            className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6"
           >
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
@@ -567,7 +567,7 @@ export const ProfilePage: React.FC = () => {
               Are you sure you want to deactivate your company account? You will lose access to:
             </p>
 
-            <ul className="list-disc list-inside text-sm text-gray-600 mb-6 space-y-1">
+            <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-300 dark:text-gray-600 mb-6 space-y-1">
               <li>All job postings and applicant data</li>
               <li>Candidate search and AI recommendations</li>
               <li>Company analytics and insights</li>
@@ -584,7 +584,7 @@ export const ProfilePage: React.FC = () => {
               </button>
               <button
                 onClick={() => setShowDeactivateModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 transition-colors"
               >
                 Cancel
               </button>

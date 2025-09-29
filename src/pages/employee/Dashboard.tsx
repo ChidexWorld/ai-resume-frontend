@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
   FileText,
@@ -18,9 +18,10 @@ import {
   Loader2,
 } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { employeeService } from '../../services/employeeService';
 import { Link } from "react-router-dom";
+import toast from 'react-hot-toast';
 
 export const EmployeeDashboard: React.FC = () => {
   const { user } = useAuthStore();
@@ -38,7 +39,7 @@ export const EmployeeDashboard: React.FC = () => {
 
   const { data: recommendedJobs, isLoading: jobsLoading } = useQuery({
     queryKey: ['job-recommendations'],
-    queryFn: () => employeeService.getJobRecommendations()
+    queryFn: () => employeeService.getJobRecommendations({ fast_mode: true, limit: 6 })
   });
 
   const { data: skillsAnalysis, isLoading: skillsLoading } = useQuery({
@@ -135,7 +136,7 @@ export const EmployeeDashboard: React.FC = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-6 text-white"
+        className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-2xl p-6 text-white"
       >
         <div className="flex items-center justify-between">
           <div>
@@ -147,7 +148,7 @@ export const EmployeeDashboard: React.FC = () => {
             </p>
           </div>
           <div className="hidden md:block">
-            <div className="bg-white/10 backdrop-blur-lg rounded-lg p-4">
+            <div className="bg-white dark:bg-gray-800/10 backdrop-blur-lg rounded-lg p-4">
               <TrendingUp className="w-8 h-8 text-white mb-2" />
               <p className="text-sm">Profile Strength</p>
               <p className="text-2xl font-bold">
@@ -168,7 +169,7 @@ export const EmployeeDashboard: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
+            className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-xl p-6 shadow-sm hover:shadow-md dark:shadow-gray-900 transition-shadow"
           >
             <div className="flex items-center justify-between">
               <div className={`p-3 rounded-lg ${
@@ -185,11 +186,11 @@ export const EmployeeDashboard: React.FC = () => {
                 }`} />
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-gray-800">{stat.value}</p>
-                <p className="text-sm text-gray-500">{stat.label}</p>
+                <p className="text-2xl font-bold text-gray-800 dark:text-gray-100 dark:text-gray-100">{stat.value}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500">{stat.label}</p>
               </div>
             </div>
-            <p className="text-xs text-green-600 mt-4 font-medium">
+            <p className="text-xs text-green-600 dark:text-green-400 mt-4 font-medium">
               {stat.change}
             </p>
           </motion.div>
@@ -202,21 +203,21 @@ export const EmployeeDashboard: React.FC = () => {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
-          className="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm"
+          className="lg:col-span-2 bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-xl p-6 shadow-sm dark:shadow-gray-900"
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-800">
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 dark:text-gray-100">
               Recent Applications
             </h2>
-            <button className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
+            <button className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium flex items-center gap-1">
               View All <ArrowRight className="w-4 h-4" />
             </button>
           </div>
           <div className="space-y-4">
             {applicationsLoading ? (
               <div className="flex items-center justify-center p-8">
-                <Loader2 className="animate-spin w-6 h-6 text-gray-400" />
-                <span className="ml-2 text-gray-500">
+                <Loader2 className="animate-spin w-6 h-6 text-gray-400 dark:text-gray-500" />
+                <span className="ml-2 text-gray-500 dark:text-gray-400 dark:text-gray-500">
                   Loading applications...
                 </span>
               </div>
@@ -224,25 +225,25 @@ export const EmployeeDashboard: React.FC = () => {
               applications.slice(0, 3).map((app) => (
                 <div
                   key={app.id}
-                  className="flex items-center gap-4 p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-4 p-4 border border-gray-100 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                     <Briefcase className="w-6 h-6 text-blue-600" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-medium text-gray-800">
+                    <h3 className="font-medium text-gray-800 dark:text-gray-100">
                       {app.job?.title || `Job Application #${app.id}`}
                     </h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-600">
                       {app.employer?.company_name || `Job ID: ${app.job_id}`}
                     </p>
                     <div className="flex items-center gap-4 mt-1">
-                      <span className="flex items-center gap-1 text-xs text-gray-500">
+                      <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                         <Clock className="w-3 h-3" />
                         {new Date(app.applied_at).toLocaleDateString()}
                       </span>
                       {app.job?.location && (
-                        <span className="flex items-center gap-1 text-xs text-gray-500">
+                        <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                           <MapPin className="w-3 h-3" />
                           {app.job.location}
                         </span>
@@ -268,12 +269,12 @@ export const EmployeeDashboard: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div className="text-center p-8 text-gray-500">
-                <Target className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+              <div className="text-center p-8 text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                <Target className="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
                 <p>No applications yet</p>
                 <Link
                   to="/employee/jobs"
-                  className="text-blue-600 hover:text-blue-700 text-sm mt-2 inline-block"
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm mt-2 inline-block"
                 >
                   Find jobs to apply to
                 </Link>
@@ -287,11 +288,11 @@ export const EmployeeDashboard: React.FC = () => {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white rounded-xl p-6 shadow-sm"
+          className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-800">Upcoming</h2>
-            <Calendar className="w-5 h-5 text-gray-400" />
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Upcoming</h2>
+            <Calendar className="w-5 h-5 text-gray-400 dark:text-gray-500" />
           </div>
           <div className="space-y-4">
             {upcomingEvents.length > 0 ? (
@@ -309,22 +310,22 @@ export const EmployeeDashboard: React.FC = () => {
                     }`}
                   />
                   <div className="flex-1">
-                    <p className="font-medium text-gray-800 text-sm">
+                    <p className="font-medium text-gray-800 dark:text-gray-100 text-sm">
                       {event.title}
                     </p>
-                    <p className="text-xs text-gray-500">{event.time}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{event.time}</p>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="text-center p-4 text-gray-500">
-                <Calendar className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+              <div className="text-center p-4 text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                <Calendar className="w-8 h-8 mx-auto mb-2 text-gray-300 dark:text-gray-600" />
                 <p className="text-sm">No upcoming events</p>
                 <p className="text-xs">Apply to jobs to see updates here</p>
               </div>
             )}
           </div>
-          <button className="w-full mt-4 py-2 text-blue-600 hover:text-blue-700 text-sm font-medium border border-blue-200 hover:border-blue-300 rounded-lg transition-colors">
+          <button className="w-full mt-4 py-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium border border-blue-200 hover:border-blue-300 rounded-lg transition-colors">
             View Calendar
           </button>
         </motion.div>
@@ -335,13 +336,13 @@ export const EmployeeDashboard: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="bg-white rounded-xl p-6 shadow-sm"
+        className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-800">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
             Recommended for You
           </h2>
-          <button className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
+          <button className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium flex items-center gap-1">
             See All Jobs <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -369,8 +370,8 @@ export const EmployeeDashboard: React.FC = () => {
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="font-medium text-gray-800">{jobRec.job.title || 'Job Title'}</h3>
-                    <p className="text-sm text-gray-600">{jobRec.job.department || 'Department'}</p>
+                    <h3 className="font-medium text-gray-800 dark:text-gray-100">{jobRec.job.title || 'Job Title'}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-600">{jobRec.job.department || 'Department'}</p>
                   </div>
                   <div className="text-right">
                     <div className="flex items-center gap-1">
@@ -382,7 +383,7 @@ export const EmployeeDashboard: React.FC = () => {
                   </div>
                 </div>
                 <div className="space-y-2 mb-4">
-                  <div className="flex items-center gap-1 text-sm text-gray-600">
+                  <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300 dark:text-gray-600">
                     <MapPin className="w-4 h-4" />
                     {jobRec.job.location || 'Location not specified'}
                   </div>
@@ -407,25 +408,33 @@ export const EmployeeDashboard: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     Match found: {new Date(jobRec.created_at).toLocaleDateString()}
                   </span>
-                  <Link
-                    to={`/employee/jobs/${jobRec.job.id}`}
-                    className="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    View & Apply
-                  </Link>
+                  <div className="flex gap-2">
+                    <Link
+                      to={`/employee/jobs/${jobRec.job.id}`}
+                      className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                      View Details
+                    </Link>
+                    <Link
+                      to={`/employee/jobs/${jobRec.job.id}/apply`}
+                      className="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Apply Now
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))
           ) : (
-            <div className="col-span-full text-center p-8 text-gray-500">
-              <Briefcase className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+            <div className="col-span-full text-center p-8 text-gray-500 dark:text-gray-400 dark:text-gray-500">
+              <Briefcase className="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
               <p>No recommended jobs available</p>
               <Link
                 to="/employee/jobs"
-                className="text-blue-600 hover:text-blue-700 text-sm mt-2 inline-block"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm mt-2 inline-block"
               >
                 Browse all jobs
               </Link>
@@ -443,26 +452,27 @@ export const EmployeeDashboard: React.FC = () => {
       >
         <Link
           to="/employee/resumes"
-          className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-blue-300 hover:bg-blue-50 transition-all group block text-center"
+          className="bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-blue-300 hover:bg-blue-50 transition-all group block text-center"
         >
-          <Plus className="w-8 h-8 text-gray-400 group-hover:text-blue-600 mx-auto mb-2" />
-          <p className="font-medium text-gray-600 group-hover:text-blue-700">
+          <Plus className="w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 mx-auto mb-2" />
+          <p className="font-medium text-gray-600 dark:text-gray-300 dark:text-gray-600 group-hover:text-blue-700">
             Upload Resume
           </p>
         </Link>
-        <button className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-blue-300 hover:bg-blue-50 transition-all group">
-          <Download className="w-8 h-8 text-gray-400 group-hover:text-blue-600 mx-auto mb-2" />
-          <p className="font-medium text-gray-600 group-hover:text-blue-700">
+        <button className="bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-blue-300 hover:bg-blue-50 transition-all group">
+          <Download className="w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 mx-auto mb-2" />
+          <p className="font-medium text-gray-600 dark:text-gray-300 dark:text-gray-600 group-hover:text-blue-700">
             Download Resume
           </p>
         </button>
-        <button className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-blue-300 hover:bg-blue-50 transition-all group">
-          <Users className="w-8 h-8 text-gray-400 group-hover:text-blue-600 mx-auto mb-2" />
-          <p className="font-medium text-gray-600 group-hover:text-blue-700">
+        <button className="bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-blue-300 hover:bg-blue-50 transition-all group">
+          <Users className="w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 mx-auto mb-2" />
+          <p className="font-medium text-gray-600 dark:text-gray-300 dark:text-gray-600 group-hover:text-blue-700">
             Network & Connect
           </p>
         </button>
       </motion.div>
+
     </div>
   );
 };
