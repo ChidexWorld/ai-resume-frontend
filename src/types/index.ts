@@ -148,10 +148,87 @@ export interface JobApplication {
   employer?: Record<string, any>;
 }
 
+// Job Posting types based on backend schemas
+export type JobType = "full_time" | "part_time" | "contract" | "internship" | "freelance";
+export type ExperienceLevel = "entry" | "junior" | "mid" | "senior" | "lead" | "executive";
+export type JobStatus = "active" | "paused" | "closed" | "expired";
+
+export interface JobPosting {
+  id: number;
+  employer_id: number;
+  title: string;
+  description: string;
+  department?: string;
+  location: string;
+  remote_allowed: boolean;
+  job_type: string;
+  experience_level: string;
+  salary_range?: string;
+  currency: string;
+  salary_min?: number;
+  salary_max?: number;
+  required_skills: string[];
+  preferred_skills: string[];
+  required_experience: Record<string, any>;
+  required_education: Record<string, any>;
+  communication_requirements: Record<string, any>;
+  matching_weights: Record<string, any>;
+  minimum_match_score: number;
+  status: string;
+  is_urgent: boolean;
+  is_active: boolean;
+  applications_count: number;
+  max_applications?: number;
+  auto_match_enabled: boolean;
+  created_at: string;
+  updated_at: string;
+  expires_at?: string;
+}
+
+export interface JobPostingCreate {
+  title: string;
+  description: string;
+  department?: string;
+  location: string;
+  remote_allowed: boolean;
+  job_type: JobType;
+  experience_level: ExperienceLevel;
+  salary_min?: number | null;
+  salary_max?: number | null;
+  currency?: string;
+  required_skills: string[];
+  preferred_skills?: string[];
+  required_experience?: Record<string, any>;
+  required_education?: Record<string, any>;
+  communication_requirements?: Record<string, any>;
+  matching_weights?: Record<string, any>;
+  minimum_match_score?: number;
+  is_urgent?: boolean;
+  max_applications?: number;
+  auto_match_enabled?: boolean;
+  expires_at?: string;
+}
+
+export interface JobPostingUpdate {
+  title?: string;
+  description?: string;
+  department?: string;
+  location?: string;
+  remote_allowed?: boolean;
+  job_type?: JobType;
+  experience_level?: ExperienceLevel;
+  salary_min?: number;
+  salary_max?: number;
+  required_skills?: string[];
+  preferred_skills?: string[];
+  status?: JobStatus;
+  minimum_match_score?: number;
+}
+
 // Job Recommendation types
 export interface JobRecommendation {
   match_id: number;
-  job: Record<string, any>;
+  job: JobPosting;
   match_score: number;
   match_details: Record<string, any>;
   created_at: string;
@@ -162,7 +239,7 @@ export interface ApiError {
   response?: {
     data?: {
       message?: string;
-      detail?: string;
+      detail?: string | Array<{loc: string[], msg: string, type: string}>;
     };
   };
 }

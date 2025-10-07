@@ -100,7 +100,7 @@ export const ApplicationsPage: React.FC = () => {
       case 'shortlisted':
         return 'Congratulations! You\'ve been shortlisted';
       case 'interviewed':
-        return 'Interview completed, awaiting decision';
+        return 'Interview scheduled - prepare for your meeting!';
       case 'accepted':
         return 'Congratulations! Your application was accepted';
       case 'rejected':
@@ -288,22 +288,102 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
                 {application.match_score}% match
               </div>
             )}
-            {application.interview_scheduled_at && (
-              <div className="flex items-center gap-1">
-                <MessageSquare className="w-4 h-4" />
-                Interview: {format(new Date(application.interview_scheduled_at), 'MMM d, h:mm a')}
+            {(application.interview_scheduled || application.interview_scheduled_at) && (
+              <div className="flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-medium">
+                <Calendar className="w-4 h-4" />
+                Interview: {format(new Date(application.interview_scheduled || application.interview_scheduled_at!), 'MMM d, h:mm a')}
               </div>
             )}
           </div>
 
-          <p className="text-sm text-gray-700 mb-3">
+          <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
             {getStatusMessage(application.status)}
           </p>
 
+          {/* Match Details */}
+          {application.match_details && (
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              {application.match_details.skills_score !== undefined && (
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div
+                      className="bg-blue-600 h-2 rounded-full"
+                      style={{ width: `${application.match_details.skills_score}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                    Skills: {application.match_details.skills_score}%
+                  </span>
+                </div>
+              )}
+              {application.match_details.experience_score !== undefined && (
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div
+                      className="bg-green-600 h-2 rounded-full"
+                      style={{ width: `${application.match_details.experience_score}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                    Exp: {application.match_details.experience_score}%
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Matching Skills */}
+          {application.match_details?.matching_skills && application.match_details.matching_skills.length > 0 && (
+            <div className="mb-3">
+              <p className="text-xs font-medium text-green-700 dark:text-green-400 mb-1">Matching Skills:</p>
+              <div className="flex flex-wrap gap-1">
+                {application.match_details.matching_skills.slice(0, 5).map((skill, idx) => (
+                  <span key={idx} className="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded text-xs">
+                    {skill}
+                  </span>
+                ))}
+                {application.match_details.matching_skills.length > 5 && (
+                  <span className="px-2 py-0.5 text-green-700 dark:text-green-400 text-xs">
+                    +{application.match_details.matching_skills.length - 5} more
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Missing Skills */}
+          {application.match_details?.missing_skills && application.match_details.missing_skills.length > 0 && (
+            <div className="mb-3">
+              <p className="text-xs font-medium text-orange-700 dark:text-orange-400 mb-1">Skills to Develop:</p>
+              <div className="flex flex-wrap gap-1">
+                {application.match_details.missing_skills.slice(0, 5).map((skill, idx) => (
+                  <span key={idx} className="px-2 py-0.5 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded text-xs">
+                    {skill}
+                  </span>
+                ))}
+                {application.match_details.missing_skills.length > 5 && (
+                  <span className="px-2 py-0.5 text-orange-700 dark:text-orange-400 text-xs">
+                    +{application.match_details.missing_skills.length - 5} more
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Employer Notes */}
           {application.notes && (
-            <div className="bg-gray-50 rounded-lg p-3 mb-3">
-              <p className="text-sm text-gray-700">
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-3">
+              <p className="text-sm text-blue-900 dark:text-blue-300">
                 <strong>Employer Notes:</strong> {application.notes}
+              </p>
+            </div>
+          )}
+
+          {/* AI Recommendation */}
+          {application.recommendation && (
+            <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 mb-3">
+              <p className="text-sm text-purple-900 dark:text-purple-300">
+                <strong>AI Insight:</strong> {application.recommendation}
               </p>
             </div>
           )}

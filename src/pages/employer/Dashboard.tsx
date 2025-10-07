@@ -387,18 +387,27 @@ export const EmployerDashboard: React.FC = () => {
                     {candidate.resume_analysis?.contact_info?.location || "Location not specified"}
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {candidate.resume_analysis?.skills?.slice(0, 3).map((skill: string) => (
-                      <span
-                        key={skill}
-                        className="px-2 py-1 bg-gray-100 text-xs text-gray-600 dark:text-gray-300 dark:text-gray-600 rounded"
-                      >
-                        {skill}
-                      </span>
-                    )) || (
-                      <span className="px-2 py-1 bg-gray-100 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 rounded">
-                        No skills listed
-                      </span>
-                    )}
+                    {(() => {
+                      const skills = candidate.resume_analysis?.skills;
+                      const allSkills = [
+                        ...(skills?.technical_skills || []),
+                        ...(skills?.soft_skills || []),
+                      ];
+                      return allSkills.length > 0 ? (
+                        allSkills.slice(0, 3).map((skill: string, index: number) => (
+                          <span
+                            key={`${skill}-${index}`}
+                            className="px-2 py-1 bg-gray-100 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded"
+                          >
+                            {skill}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="px-2 py-1 bg-gray-100 text-xs text-gray-500 dark:bg-gray-700 dark:text-gray-400 rounded">
+                          No skills listed
+                        </span>
+                      );
+                    })()}
                   </div>
                 </div>
                 <div className="flex gap-2">

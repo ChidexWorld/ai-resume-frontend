@@ -103,14 +103,14 @@ export const ResumeUpload: React.FC<ResumeUploadProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-gray-800">Upload Resume</h2>
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200">Upload Resume</h2>
         {onClose && (
           <button
             onClick={onClose}
-            className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+            className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -121,10 +121,10 @@ export const ResumeUpload: React.FC<ResumeUploadProps> = ({
       <div className="space-y-4">
         {!selectedFile ? (
           <motion.div
-            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+            className={`border-2 border-dashed rounded-lg p-6 sm:p-8 text-center transition-colors ${
               dragActive
-                ? 'border-blue-400 bg-blue-50'
-                : 'border-gray-300 hover:border-gray-400'
+                ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
             }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -133,11 +133,11 @@ export const ResumeUpload: React.FC<ResumeUploadProps> = ({
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
           >
-            <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-700 mb-2">
+            <Upload className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-base sm:text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
               Drop your resume here or click to browse
             </h3>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-4">
               Supports PDF, DOCX, and TXT files up to 25MB
             </p>
             <input
@@ -149,7 +149,7 @@ export const ResumeUpload: React.FC<ResumeUploadProps> = ({
             />
             <label
               htmlFor="resume-upload"
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer text-sm sm:text-base"
             >
               <Upload className="w-4 h-4 mr-2" />
               Choose File
@@ -159,21 +159,21 @@ export const ResumeUpload: React.FC<ResumeUploadProps> = ({
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="border border-gray-200 rounded-lg p-4"
+            className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 sm:p-4"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <FileText className="w-6 h-6 text-blue-600" />
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg flex-shrink-0">
+                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <div>
-                  <h4 className="font-medium text-gray-800">{selectedFile.name}</h4>
-                  <p className="text-sm text-gray-500">{formatFileSize(selectedFile.size)}</p>
+                <div className="min-w-0 flex-1">
+                  <h4 className="font-medium text-gray-800 dark:text-gray-200 truncate text-sm sm:text-base">{selectedFile.name}</h4>
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{formatFileSize(selectedFile.size)}</p>
                 </div>
               </div>
               <button
                 onClick={handleRemoveFile}
-                className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                className="p-1 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors flex-shrink-0"
                 disabled={uploadMutation.isPending}
               >
                 <X className="w-4 h-4" />
@@ -187,12 +187,12 @@ export const ResumeUpload: React.FC<ResumeUploadProps> = ({
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3"
+            className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 sm:p-4 flex items-start gap-3"
           >
-            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
-            <div>
-              <p className="text-sm font-medium text-red-800">Upload Failed</p>
-              <p className="text-sm text-red-600">
+            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-red-800 dark:text-red-300">Upload Failed</p>
+              <p className="text-xs sm:text-sm text-red-600 dark:text-red-400 break-words">
                 {uploadMutation.error?.response?.data?.detail || 'Something went wrong. Please try again.'}
               </p>
             </div>
@@ -203,12 +203,12 @@ export const ResumeUpload: React.FC<ResumeUploadProps> = ({
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3"
+            className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 sm:p-4 flex items-start gap-3"
           >
-            <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-            <div>
-              <p className="text-sm font-medium text-green-800">Upload Successful</p>
-              <p className="text-sm text-green-600">
+            <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-green-800 dark:text-green-300">Upload Successful</p>
+              <p className="text-xs sm:text-sm text-green-600 dark:text-green-400">
                 Your resume has been uploaded and is being analyzed.
               </p>
             </div>
@@ -216,11 +216,11 @@ export const ResumeUpload: React.FC<ResumeUploadProps> = ({
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-4">
           {onClose && (
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors text-sm sm:text-base"
               disabled={uploadMutation.isPending}
             >
               Cancel
@@ -229,7 +229,7 @@ export const ResumeUpload: React.FC<ResumeUploadProps> = ({
           <button
             onClick={handleUpload}
             disabled={!selectedFile || uploadMutation.isPending}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
           >
             {uploadMutation.isPending ? (
               <>

@@ -145,8 +145,17 @@ export const employerService = {
     return response.data;
   },
 
+  getJobs: async (params?: {
+    status_filter?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<JobPosting[]> => {
+    const response = await api.get('/employer/jobs', { params });
+    return response.data;
+  },
+
   getJobPosting: async (jobId: number): Promise<JobPosting> => {
-    const response = await api.get(`/api/employer/jobs/${jobId}`);
+    const response = await api.get(`/employer/jobs/${jobId}`);
     return response.data;
   },
 
@@ -156,12 +165,12 @@ export const employerService = {
   },
 
   updateJobPosting: async (jobId: number, jobData: Partial<JobPosting>): Promise<JobPosting> => {
-    const response = await api.put(`/api/employer/jobs/${jobId}`, jobData);
+    const response = await api.put(`/employer/jobs/${jobId}`, jobData);
     return response.data;
   },
 
   deleteJobPosting: async (jobId: number): Promise<void> => {
-    const response = await api.delete(`/api/employer/jobs/${jobId}`);
+    const response = await api.delete(`/employer/jobs/${jobId}`);
     return response.data;
   },
 
@@ -172,7 +181,7 @@ export const employerService = {
     limit?: number;
     offset?: number;
   }): Promise<ApplicationReviewResponse[]> => {
-    const response = await api.get(`/api/employer/jobs/${jobId}/applications`, { params });
+    const response = await api.get(`/employer/jobs/${jobId}/applications`, { params });
     return response.data;
   },
 
@@ -181,7 +190,7 @@ export const employerService = {
     status: string,
     notes?: string
   ): Promise<ApplicationReviewResponse> => {
-    const response = await api.put(`/api/employer/applications/${applicationId}/status`, {
+    const response = await api.put(`/employer/applications/${applicationId}/status`, {
       status,
       notes
     });
@@ -197,7 +206,7 @@ export const employerService = {
       notes?: string;
     }
   ): Promise<any> => {
-    const response = await api.post(`/api/employer/applications/${applicationId}/interview`, {
+    const response = await api.post(`/employer/applications/${applicationId}/interview`, {
       application_id: applicationId,
       ...interviewData
     });
@@ -219,12 +228,12 @@ export const employerService = {
 
   // AI recommendations - Updated to use new matching API
   getAIRecommendations: async (jobId: number, limit?: number): Promise<CandidateSearchResponse[]> => {
-    const response = await api.post(`/api/matching/generate-matches/${jobId}`);
+    const response = await api.post(`/matching/generate-matches/${jobId}`);
     return response.data;
   },
 
   autoScoreApplications: async (jobId: number): Promise<any> => {
-    const response = await api.post(`/api/matching/generate-matches/${jobId}`);
+    const response = await api.post(`/matching/generate-matches/${jobId}`);
     return response.data;
   },
 
@@ -240,12 +249,12 @@ export const employerService = {
       // For each job, get applications with interviews
       for (const job of jobs) {
         try {
-          const applicationsResponse = await api.get(`/api/employer/jobs/${job.id}/applications`);
+          const applicationsResponse = await api.get(`/employer/jobs/${job.id}/applications`);
           const applications = applicationsResponse.data;
 
           // Filter applications that have interview dates
           const interviewApplications = applications.filter((app: any) =>
-            app.application.interview_scheduled_at
+            app.application.interview_scheduled
           );
 
           // Transform to Interview objects
@@ -256,11 +265,11 @@ export const employerService = {
               candidate_name: `${app.employee.first_name} ${app.employee.last_name}`,
               candidate_email: app.employee.email,
               job_title: job.title,
-              interview_date: new Date(app.application.interview_scheduled_at),
+              interview_date: new Date(app.application.interview_scheduled),
               interview_type: 'video', // Default, can be enhanced later
               location_or_link: undefined, // Can be enhanced later
-              status: app.application.status === 'interview_scheduled' ? 'scheduled' : 'completed',
-              notes: app.application.notes || undefined,
+              status: app.application.status === 'interviewed' ? 'scheduled' : 'completed',
+              notes: app.application.employer_notes || undefined,
               candidate_id: app.employee.id,
               job_id: job.id
             });

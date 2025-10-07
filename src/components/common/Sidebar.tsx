@@ -33,7 +33,10 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
-  const { isDesktop, isMobile } = useResponsive();
+  const { isDesktop, isMobile, isTablet } = useResponsive();
+
+  // Treat tablet as mobile for sidebar behavior
+  const isMobileView = isMobile || isTablet;
 
   const handleLogout = () => {
     logout();
@@ -44,6 +47,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { icon: LayoutDashboard, label: "Dashboard", path: "/employee/dashboard" },
     { icon: FileText, label: "My Resumes", path: "/employee/resumes" },
     { icon: Briefcase, label: "Job Search", path: "/employee/jobs" },
+    { icon: TrendingUp, label: "Job Matches", path: "/employee/job-matches" },
     { icon: Target, label: "Applications", path: "/employee/applications" },
     { icon: Award, label: "Voice Assessment", path: "/employee/assessments" },
     { icon: Activity, label: "Skills Analysis", path: "/employee/skills-analysis" },
@@ -67,7 +71,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { icon: Users, label: "User Management", path: "/admin/users" },
     { icon: FileText, label: "Content Moderation", path: "/admin/content" },
     { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },
-    { icon: Settings, label: "System Settings", path: "/admin/settings" },
+    { icon: Database, label: "System Cleanup", path: "/admin/settings" },
   ];
 
   const getMenuItems = () => {
@@ -115,9 +119,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   return (
     <>
-      {/* Mobile Overlay */}
+      {/* Mobile/Tablet Overlay */}
       <AnimatePresence>
-        {isOpen && isMobile && (
+        {isOpen && isMobileView && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -132,62 +136,58 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       <motion.aside
         initial={false}
         animate={{
-          x: isMobile ? (isOpen ? 0 : -280) : 0,
-          width: isDesktop ? (isOpen ? 288 : 80) : 288
+          x: isMobileView ? (isOpen ? 0 : -320) : 0,
+          width: isMobileView ? 280 : isDesktop ? (isOpen ? 288 : 80) : 280
         }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
         className={`${
-          isMobile
-            ? "fixed left-0 top-0 h-full bg-white dark:bg-gray-800 shadow-2xl z-50"
-            : "relative h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700"
-        } ${!isOpen && isDesktop ? "w-20" : "w-72"}`}
+          isMobileView
+            ? "fixed left-0 top-0 h-full shadow-2xl z-50"
+            : "relative h-full border-r border-gray-200 dark:border-gray-700"
+        } bg-white dark:bg-gray-900 flex-shrink-0`}
       >
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full overflow-hidden">
           {/* Header */}
-          <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+          <div className="p-4 sm:p-6 border-b border-gray-100 dark:border-gray-800">
             <div className="flex items-center justify-between">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-center gap-3"
-              >
-                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
-                  <Zap className="w-6 h-6 text-white" />
+              <div className={`flex items-center gap-2 sm:gap-3 min-w-0 ${!isOpen && isDesktop ? 'justify-center w-full' : 'flex-1'}`}>
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
                 {isOpen && (
-                  <div>
-                    <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white truncate">
                       AI Resume
                     </h2>
                     <p className="text-xs text-gray-500 dark:text-gray-400">Smart Recruitment</p>
                   </div>
                 )}
-              </motion.div>
-              {isMobile && (
+              </div>
+              {isMobileView && (
                 <button
                   onClick={onClose}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
                 >
-                  <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                  <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </button>
               )}
             </div>
           </div>
 
           {/* User Profile */}
-          <div className="p-4 border-b border-gray-100 dark:border-gray-700">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+          <div className="p-4 border-b border-gray-100 dark:border-gray-800">
+            <div className={`flex items-center gap-3 ${!isOpen && isDesktop ? 'justify-center' : ''}`}>
+              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0">
                 {user?.user_type === "employee" ? (
-                  <User className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+                  <User className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 ) : user?.user_type === "admin" ? (
-                  <Shield className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+                  <Shield className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 ) : (
-                  <Building className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+                  <Building className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 )}
               </div>
               {isOpen && (
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <p className="font-medium text-gray-800 dark:text-gray-200 truncate">
                     {getUserDisplayName()}
                   </p>
@@ -206,18 +206,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 <li key={item.path}>
                   <NavLink
                     to={item.path}
+                    onClick={isMobileView ? onClose : undefined}
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative ${
+                        !isOpen && isDesktop ? 'justify-center' : ''
+                      } ${
                         isActive
-                          ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 font-medium"
-                          : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-800 dark:hover:text-gray-200"
+                          ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 font-medium"
+                          : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"
                       }`
                     }
                   >
                     <item.icon className="w-5 h-5 flex-shrink-0" />
                     {isOpen && <span className="truncate">{item.label}</span>}
-                    {!isOpen && (
-                      <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity duration-200">
+                    {!isOpen && isDesktop && (
+                      <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 dark:bg-gray-700 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity duration-200">
                         {item.label}
                       </div>
                     )}
@@ -245,15 +248,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           )}
 
           {/* Footer */}
-          <div className="p-4 border-t border-gray-100 dark:border-gray-700">
+          <div className="p-4 border-t border-gray-100 dark:border-gray-800">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 rounded-lg transition-all duration-200"
+              className={`w-full flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 rounded-lg transition-all duration-200 group relative ${
+                !isOpen && isDesktop ? 'justify-center' : ''
+              }`}
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-5 h-5 flex-shrink-0" />
               {isOpen && <span>Logout</span>}
-              {!isOpen && (
-                <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50">
+              {!isOpen && isDesktop && (
+                <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 dark:bg-gray-700 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50">
                   Logout
                 </div>
               )}

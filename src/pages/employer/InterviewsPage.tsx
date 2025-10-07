@@ -19,12 +19,13 @@ import {
   AlertCircle,
   User,
   Briefcase,
-  MessageSquare
+  MessageSquare,
+  Loader2,
+  X
 } from 'lucide-react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay, addMonths, subMonths } from 'date-fns';
 import { employerService, type Interview } from '../../services/employerService';
-import { matchingService } from '../../services/matchingService';
 import toast from 'react-hot-toast';
 
 
@@ -42,24 +43,6 @@ export const InterviewsPage: React.FC = () => {
     queryKey: ['employer-interviews'],
     queryFn: employerService.getInterviews,
     refetchInterval: 60000, // Refetch every minute
-  });
-
-  // AI Matching Statistics
-  const { data: matchingStats } = useQuery({
-    queryKey: ['matching-stats'],
-    queryFn: matchingService.getMatchingStats,
-    refetchInterval: 300000, // Refetch every 5 minutes
-  });
-
-  // Get AI recommendations mutation
-  const getAIRecommendationsMutation = useMutation({
-    mutationFn: matchingService.getEmployeeMatches,
-    onSuccess: (data) => {
-      toast.success(`Found ${data.length} AI-recommended candidates!`);
-    },
-    onError: () => {
-      toast.error('Failed to get AI recommendations');
-    }
   });
 
   const monthStart = startOfMonth(currentMonth);
@@ -166,14 +149,6 @@ export const InterviewsPage: React.FC = () => {
             </button>
           </div>
           <button
-            onClick={() => getAIRecommendationsMutation.mutate()}
-            disabled={getAIRecommendationsMutation.isPending}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
-          >
-            <Brain className="w-4 h-4" />
-            {getAIRecommendationsMutation.isPending ? 'Finding...' : 'AI Recommendations'}
-          </button>
-          <button
             onClick={() => setShowNewInterviewModal(true)}
             className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
           >
@@ -203,38 +178,6 @@ export const InterviewsPage: React.FC = () => {
           Total: {filteredInterviews.length} interviews
         </div>
       </div>
-
-      {/* AI Insights */}
-      {matchingStats && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-4 border border-purple-200"
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <Brain className="w-5 h-5 text-purple-600" />
-            <h3 className="text-lg font-semibold text-gray-900">AI Matching Insights</h3>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-purple-600">{matchingStats.total_matches}</p>
-              <p className="text-sm text-gray-600">Total Matches</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">{matchingStats.pending_matches}</p>
-              <p className="text-sm text-gray-600">Pending Review</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">{matchingStats.average_match_score.toFixed(1)}%</p>
-              <p className="text-sm text-gray-600">Avg Match Score</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-orange-600">{matchingStats.accepted_matches}</p>
-              <p className="text-sm text-gray-600">Accepted</p>
-            </div>
-          </div>
-        </motion.div>
-      )}
 
       {/* Calendar View */}
       {viewMode === 'calendar' && (
@@ -410,6 +353,13 @@ export const InterviewsPage: React.FC = () => {
             handleUpdateStatus(id, status);
             setSelectedInterview(null);
           }}
+        />
+      )}
+
+      {/* Schedule Interview Modal */}
+      {showNewInterviewModal && (
+        <ScheduleInterviewModal
+          onClose={() => setShowNewInterviewModal(false)}
         />
       )}
     </div>
@@ -648,6 +598,295 @@ const InterviewDetailModal: React.FC<InterviewDetailModalProps> = ({
             </button>
           </div>
         </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// Schedule Interview Modal Component
+interface ScheduleInterviewModalProps {
+  onClose: () => void;
+}
+
+const ScheduleInterviewModal: React.FC<ScheduleInterviewModalProps> = ({ onClose }) => {
+  const queryClient = useQueryClient();
+  const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
+  const [selectedApplicationId, setSelectedApplicationId] = useState<number | null>(null);
+  const [interviewDate, setInterviewDate] = useState('');
+  const [interviewTime, setInterviewTime] = useState('');
+  const [interviewType, setInterviewType] = useState<'video' | 'phone' | 'in_person'>('video');
+  const [locationOrLink, setLocationOrLink] = useState('');
+  const [notes, setNotes] = useState('');
+
+  // Fetch jobs for the employer
+  const { data: jobs, isLoading: jobsLoading } = useQuery({
+    queryKey: ['employer-jobs'],
+    queryFn: employerService.getJobs,
+  });
+
+  // Fetch applications for selected job
+  const { data: applications, isLoading: applicationsLoading } = useQuery({
+    queryKey: ['job-applications', selectedJobId],
+    queryFn: () => selectedJobId ? employerService.getJobApplications(selectedJobId) : Promise.resolve([]),
+    enabled: !!selectedJobId,
+  });
+
+  // Schedule interview mutation
+  const scheduleInterviewMutation = useMutation({
+    mutationFn: (data: {
+      application_id: number;
+      interview_date: string;
+      interview_type: 'video' | 'phone' | 'in_person';
+      location_or_link?: string;
+      notes?: string;
+    }) => employerService.scheduleInterview(data.application_id, {
+      interview_date: data.interview_date,
+      interview_type: data.interview_type,
+      location_or_link: data.location_or_link,
+      notes: data.notes,
+    }),
+    onSuccess: () => {
+      toast.success('Interview scheduled successfully!');
+      queryClient.invalidateQueries({ queryKey: ['employer-interviews'] });
+      queryClient.invalidateQueries({ queryKey: ['job-applications'] });
+      onClose();
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.detail || 'Failed to schedule interview');
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!selectedApplicationId) {
+      toast.error('Please select an application');
+      return;
+    }
+
+    if (!interviewDate || !interviewTime) {
+      toast.error('Please select date and time');
+      return;
+    }
+
+    // Combine date and time into ISO format
+    const dateTimeString = `${interviewDate}T${interviewTime}:00.000Z`;
+
+    scheduleInterviewMutation.mutate({
+      application_id: selectedApplicationId,
+      interview_date: dateTimeString,
+      interview_type: interviewType,
+      location_or_link: locationOrLink || undefined,
+      notes: notes || undefined,
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+      >
+        {/* Header */}
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Schedule Interview</h2>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+          </div>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Select Job */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Select Job Position *
+            </label>
+            {jobsLoading ? (
+              <div className="flex items-center gap-2 text-gray-500">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Loading jobs...
+              </div>
+            ) : (
+              <select
+                value={selectedJobId || ''}
+                onChange={(e) => {
+                  setSelectedJobId(Number(e.target.value));
+                  setSelectedApplicationId(null);
+                }}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              >
+                <option value="">Select a job</option>
+                {jobs?.map((job) => (
+                  <option key={job.id} value={job.id}>
+                    {job.title} ({job.applications_count} applications)
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          {/* Select Application */}
+          {selectedJobId && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Select Candidate *
+              </label>
+              {applicationsLoading ? (
+                <div className="flex items-center gap-2 text-gray-500">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Loading applications...
+                </div>
+              ) : applications && applications.length > 0 ? (
+                <select
+                  value={selectedApplicationId || ''}
+                  onChange={(e) => setSelectedApplicationId(Number(e.target.value))}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                >
+                  <option value="">Select a candidate</option>
+                  {applications.map((app: any) => (
+                    <option key={app.application.id} value={app.application.id}>
+                      {app.employee.first_name} {app.employee.last_name} - Match: {app.application.match_score}%
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <p className="text-sm text-gray-500">No applications found for this job</p>
+              )}
+            </div>
+          )}
+
+          {/* Date and Time */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Interview Date *
+              </label>
+              <input
+                type="date"
+                value={interviewDate}
+                onChange={(e) => setInterviewDate(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Interview Time *
+              </label>
+              <input
+                type="time"
+                value={interviewTime}
+                onChange={(e) => setInterviewTime(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Interview Type */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Interview Type *
+            </label>
+            <div className="grid grid-cols-3 gap-3">
+              {['video', 'phone', 'in_person'].map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => setInterviewType(type as any)}
+                  className={`flex items-center justify-center gap-2 px-4 py-3 border rounded-lg transition-colors ${
+                    interviewType === type
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                      : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                  }`}
+                >
+                  {type === 'video' && <Video className="w-4 h-4" />}
+                  {type === 'phone' && <Phone className="w-4 h-4" />}
+                  {type === 'in_person' && <MapPin className="w-4 h-4" />}
+                  <span className="capitalize">{type.replace('_', ' ')}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Location or Link */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {interviewType === 'video' ? 'Meeting Link' : interviewType === 'phone' ? 'Phone Number' : 'Location'}
+            </label>
+            <input
+              type="text"
+              value={locationOrLink}
+              onChange={(e) => setLocationOrLink(e.target.value)}
+              placeholder={
+                interviewType === 'video'
+                  ? 'https://meet.google.com/...'
+                  : interviewType === 'phone'
+                  ? '+1 (555) 123-4567'
+                  : '123 Main St, City, State'
+              }
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          {/* Notes */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Notes (Optional)
+            </label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={4}
+              placeholder="Add any additional notes or instructions for the interview..."
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={scheduleInterviewMutation.isPending}
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={scheduleInterviewMutation.isPending || !selectedApplicationId}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {scheduleInterviewMutation.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Scheduling...
+                </>
+              ) : (
+                <>
+                  <Calendar className="w-4 h-4" />
+                  Schedule Interview
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       </motion.div>
     </div>
   );

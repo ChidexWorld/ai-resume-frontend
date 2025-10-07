@@ -1,12 +1,23 @@
 import { api } from './api';
 
+export interface MatchDetails {
+  skills_match?: number;
+  experience_match?: number;
+  education_match?: number;
+  location_match?: number;
+  salary_match?: number;
+  matching_skills?: string[];
+  missing_skills?: string[];
+  recommendations?: string[];
+}
+
 export interface JobMatch {
   id: number;
   employee_id: number;
   job_posting_id: number;
   resume_id: number;
   match_score: number;
-  match_details: any;
+  match_details: MatchDetails;
   is_recommended: boolean;
   is_viewed_by_employee: boolean;
   is_viewed_by_employer: boolean;
@@ -15,11 +26,23 @@ export interface JobMatch {
   updated_at: string;
 }
 
+export interface MatchSummary {
+  overall_score: number;
+  skills_score?: number;
+  experience_score?: number;
+  matching_skills?: string[];
+  missing_skills?: string[];
+  recommendations?: string[];
+}
+
 export interface EmployeeMatch {
-  employee: any;
-  resume_analysis: any;
-  voice_analysis?: any;
-  match_summary: any;
+  id?: number;
+  employee: Record<string, unknown>;
+  resume_analysis: Record<string, unknown>;
+  voice_analysis?: Record<string, unknown>;
+  match_summary: MatchSummary;
+  job_posting?: Record<string, unknown>;
+  is_dismissed?: boolean;
 }
 
 export interface MatchingStats {
@@ -47,7 +70,7 @@ export interface BulkMatchRequest {
 export const matchingService = {
   // Generate matches for a specific job
   generateJobMatches: async (jobId: number): Promise<JobMatch[]> => {
-    const response = await api.post(`/api/matching/generate-matches/${jobId}`);
+    const response = await api.post(`/matching/generate-matches/${jobId}`);
     return response.data;
   },
 
@@ -72,7 +95,7 @@ export const matchingService = {
 
   // Dismiss a job match
   dismissMatch: async (matchId: number): Promise<{ message: string }> => {
-    const response = await api.post(`/api/matching/dismiss-match/${matchId}`);
+    const response = await api.post(`/matching/dismiss-match/${matchId}`);
     return response.data;
   },
 

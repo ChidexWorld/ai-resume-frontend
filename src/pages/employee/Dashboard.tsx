@@ -16,12 +16,18 @@ import {
   Eye,
   Download,
   Loader2,
+  Video,
+  Phone,
+  MessageSquare,
 } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { employeeService } from '../../services/employeeService';
+import { matchingService } from '../../services/matchingService';
 import { Link } from "react-router-dom";
 import toast from 'react-hot-toast';
+import { MatchingStatsCard } from '../../components/matching/MatchingStatsCard';
+import { format, formatDistanceToNow } from 'date-fns';
 
 export const EmployeeDashboard: React.FC = () => {
   const { user } = useAuthStore();
@@ -59,6 +65,19 @@ export const EmployeeDashboard: React.FC = () => {
     Math.round(recommendedJobs.reduce((sum, job) => sum + job.match_score, 0) / recommendedJobs.length) : 0;
   const latestVoiceScore = voiceAnalyses?.length ?
     voiceAnalyses[0]?.analysis_results?.overall_communication_score || 0 : 0;
+
+  // Get upcoming interviews (applications with scheduled interviews in the future)
+  const upcomingInterviews = applications?.filter(app => {
+    const interviewDate = app.interview_scheduled || app.interview_scheduled_at;
+    if (!interviewDate) return false;
+    const date = new Date(interviewDate);
+    return date > new Date(); // Only future interviews
+  }).sort((a, b) => {
+    // Sort by interview date (earliest first)
+    const dateA = new Date(a.interview_scheduled || a.interview_scheduled_at!);
+    const dateB = new Date(b.interview_scheduled || b.interview_scheduled_at!);
+    return dateA.getTime() - dateB.getTime();
+  }) || [];
 
   const stats = [
     {
@@ -196,6 +215,128 @@ export const EmployeeDashboard: React.FC = () => {
           </motion.div>
         ))}
       </div>
+
+      {/* Upcoming Interviews */}
+      {upcomingInterviews.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl p-6 shadow-lg"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/20 rounded-lg">
+                <Calendar className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-white">
+                  Upcoming Interviews
+                </h2>
+                <p className="text-indigo-100 text-sm">
+                  {upcomingInterviews.length} interview{upcomingInterviews.length > 1 ? 's' : ''} scheduled
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/employee/applications"
+              className="text-white hover:text-indigo-100 text-sm font-medium flex items-center gap-1"
+            >
+              View All <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="space-y-3">
+            {upcomingInterviews.slice(0, 3).map((app) => {
+              const interviewDateStr = app.interview_scheduled || app.interview_scheduled_at!;
+              const interviewDate = new Date(interviewDateStr);
+              const isToday = format(interviewDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
+              const isTomorrow = format(interviewDate, 'yyyy-MM-dd') === format(new Date(Date.now() + 86400000), 'yyyy-MM-dd');
+
+              return (
+                <div
+                  key={app.id}
+                  className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:bg-white/20 transition-colors"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="font-semibold text-white">
+                          {app.job_title}
+                        </h3>
+                        {isToday && (
+                          <span className="px-2 py-0.5 bg-yellow-400 text-yellow-900 rounded-full text-xs font-bold">
+                            TODAY
+                          </span>
+                        )}
+                        {isTomorrow && (
+                          <span className="px-2 py-0.5 bg-green-400 text-green-900 rounded-full text-xs font-bold">
+                            TOMORROW
+                          </span>
+                        )}
+                      </div>
+
+                      <p className="text-indigo-100 text-sm mb-3">
+                        {app.company_name}
+                      </p>
+
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-white/90">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4" />
+                          <span>{format(interviewDate, 'MMM d, yyyy')}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          <span>{format(interviewDate, 'h:mm a')}</span>
+                        </div>
+                        {app.interview_type && (
+                          <div className="flex items-center gap-1">
+                            {app.interview_type === 'video' && <Video className="w-4 h-4" />}
+                            {app.interview_type === 'phone' && <Phone className="w-4 h-4" />}
+                            {app.interview_type === 'in_person' && <MapPin className="w-4 h-4" />}
+                            <span className="capitalize">{app.interview_type.replace('_', ' ')}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-1 text-indigo-200">
+                          <MessageSquare className="w-4 h-4" />
+                          <span>{formatDistanceToNow(interviewDate, { addSuffix: true })}</span>
+                        </div>
+                      </div>
+
+                      {app.interview_location && (
+                        <div className="mt-2 flex items-start gap-2 text-sm text-white/80 bg-white/10 rounded-lg p-2">
+                          <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                          <span className="break-all">{app.interview_location}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="ml-4">
+                      <Link
+                        to="/employee/applications"
+                        className="px-4 py-2 bg-white text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors text-sm font-medium"
+                      >
+                        View Details
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {upcomingInterviews.length > 3 && (
+            <div className="mt-4 text-center">
+              <Link
+                to="/employee/applications"
+                className="text-white hover:text-indigo-100 text-sm font-medium inline-flex items-center gap-1"
+              >
+                View {upcomingInterviews.length - 3} more interview{upcomingInterviews.length - 3 > 1 ? 's' : ''} <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          )}
+        </motion.div>
+      )}
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Recent Applications */}
@@ -471,6 +612,24 @@ export const EmployeeDashboard: React.FC = () => {
             Network & Connect
           </p>
         </button>
+      </motion.div>
+
+      {/* Job Matching Statistics */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white">Job Match Statistics</h2>
+          <Link
+            to="/employee/job-matches"
+            className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+          >
+            View All Matches →
+          </Link>
+        </div>
+        <MatchingStatsCard />
       </motion.div>
 
     </div>

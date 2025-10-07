@@ -201,26 +201,65 @@ export const JobCreateModal: React.FC<JobCreateModalProps> = ({ isOpen, onClose 
       return;
     }
 
+    // Title must be at least 3 characters
+    if (formData.title.trim().length < 3) {
+      toast.error('Job title must be at least 3 characters long');
+      return;
+    }
+
+    // Description must be at least 50 characters
+    if (formData.description.trim().length < 50) {
+      toast.error('Job description must be at least 50 characters long');
+      return;
+    }
+
     // Ensure arrays are not empty for required fields
     if (formData.required_skills.length === 0) {
       toast.error('Please add at least one required skill');
       return;
     }
 
-    // Prepare data for API
+    // Validate salary range
+    if (formData.salary_min !== null && formData.salary_max !== null) {
+      if (formData.salary_max < formData.salary_min) {
+        toast.error(`Maximum salary (${formData.salary_max}) must be greater than or equal to minimum salary (${formData.salary_min})`);
+        return;
+      }
+    }
+
+    // Validate minimum match score
+    if (formData.minimum_match_score < 0 || formData.minimum_match_score > 100) {
+      toast.error('Minimum match score must be between 0 and 100');
+      return;
+    }
+
+    // Prepare data for API - ensure all dict fields are actual objects, not strings
     const jobData = {
-      ...formData,
-      salary_min: formData.salary_min || 0,
-      salary_max: formData.salary_max || 0,
+      title: formData.title.trim(),
+      description: formData.description.trim(),
+      location: formData.location.trim(),
+      department: formData.department.trim() || undefined,
+      job_type: formData.job_type,
+      experience_level: formData.experience_level,
+      salary_min: formData.salary_min,
+      salary_max: formData.salary_max,
+      currency: formData.currency,
+      remote_allowed: formData.remote_allowed,
+      is_urgent: formData.is_urgent,
+      required_skills: formData.required_skills,
+      preferred_skills: formData.preferred_skills.length > 0 ? formData.preferred_skills : [],
+      // CRITICAL: Send actual objects, not strings
+      required_experience: typeof formData.required_experience === 'object' ? formData.required_experience : {},
+      required_education: typeof formData.required_education === 'object' ? formData.required_education : {},
+      communication_requirements: typeof formData.communication_requirements === 'object' ? formData.communication_requirements : {},
+      matching_weights: typeof formData.matching_weights === 'object' ? formData.matching_weights : {},
+      minimum_match_score: formData.minimum_match_score,
+      max_applications: formData.max_applications > 0 ? formData.max_applications : undefined,
+      auto_match_enabled: formData.auto_match_enabled,
       expires_at: formData.expires_at ? new Date(formData.expires_at + 'T23:59:59.999Z').toISOString() : undefined,
-      benefits: formData.benefits.trim() || undefined,
-      required_experience: formData.required_experience || {},
-      required_education: formData.required_education || {},
-      communication_requirements: formData.communication_requirements || {},
-      matching_weights: formData.matching_weights || {},
-      max_applications: formData.max_applications || 0
     };
 
+    console.log('Sending job data:', jobData);
     createJobMutation.mutate(jobData);
   };
 

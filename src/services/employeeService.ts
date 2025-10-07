@@ -60,8 +60,20 @@ export interface VoiceAnalysis {
   analyzed_at?: string;
 }
 
+export interface MatchDetails {
+  skills_score?: number;
+  experience_score?: number;
+  matching_skills?: string[];
+  missing_skills?: string[];
+  strengths?: string[];
+  concerns?: string[];
+  recommendations?: string[];
+}
+
 export interface JobApplication {
   id: number;
+  employee_id?: number;
+  job_posting_id: number;
   job_id: number;
   job_title: string;
   company_name: string;
@@ -70,9 +82,14 @@ export interface JobApplication {
   cover_letter?: string;
   status: 'pending' | 'reviewing' | 'shortlisted' | 'interviewed' | 'accepted' | 'rejected' | 'withdrawn';
   match_score: number;
+  match_details?: MatchDetails;
+  recommendation?: string;
   applied_at: string;
   reviewed_at?: string;
-  interview_scheduled_at?: string;
+  interview_scheduled?: string;
+  interview_scheduled_at?: string; // Legacy field name
+  interview_type?: string;
+  interview_location?: string;
   notes?: string;
   job_details?: any;
 }

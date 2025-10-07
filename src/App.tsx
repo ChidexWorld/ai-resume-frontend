@@ -16,6 +16,10 @@ import { RegisterPage } from "./pages/auth/RegisterPage";
 import { EmployeeDashboard } from "./pages/employee/Dashboard";
 import { EmployerDashboard } from "./pages/employer/Dashboard";
 import { AdminDashboard } from "./pages/admin/Dashboard";
+import UserManagement from "./pages/admin/UserManagement";
+import ContentModeration from "./pages/admin/ContentModeration";
+import Analytics from "./pages/admin/Analytics";
+import SystemCleanup from "./pages/admin/SystemCleanup";
 import { LandingPage } from "./pages/LandingPage";
 import { ResumePage } from "./pages/employee/ResumePage";
 import { JobsPage } from "./pages/employee/JobsPage";
@@ -27,6 +31,7 @@ import { ProfilePage as EmployeeProfilePage } from "./pages/employee/ProfilePage
 import { ProfilePage as EmployerProfilePage } from "./pages/employer/ProfilePage";
 import { SkillsAnalysisPage } from "./pages/employee/SkillsAnalysisPage";
 import { SettingsPage } from "./pages/employee/SettingsPage";
+import { JobMatchesPage } from "./pages/employee/JobMatches";
 import { SearchPage } from "./pages/employer/SearchPage";
 import { InterviewsPage } from "./pages/employer/InterviewsPage";
 import { JobPostingsPage } from "./pages/employer/JobPostingsPage";
@@ -108,6 +113,7 @@ function App() {
               <Route path="jobs" element={<JobsPage />} />
               <Route path="jobs/:jobId" element={<JobDetailsPage />} />
               <Route path="jobs/:jobId/apply" element={<JobApplicationPage />} />
+              <Route path="job-matches" element={<JobMatchesPage />} />
               <Route path="applications" element={<ApplicationsPage />} />
               <Route path="assessments" element={<AssessmentsPage />} />
               <Route path="skills-analysis" element={<SkillsAnalysisPage />} />
@@ -487,48 +493,10 @@ function App() {
             >
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboard />} />
-              <Route
-                path="users"
-                element={
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">User Management</h1>
-                    <p className="text-gray-600 mt-2">Manage system users.</p>
-                  </div>
-                }
-              />
-              <Route
-                path="content"
-                element={
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">Content Moderation</h1>
-                    <p className="text-gray-600 mt-2">
-                      Review and moderate content.
-                    </p>
-                  </div>
-                }
-              />
-              <Route
-                path="analytics"
-                element={
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">System Analytics</h1>
-                    <p className="text-gray-600 mt-2">
-                      View system-wide analytics.
-                    </p>
-                  </div>
-                }
-              />
-              <Route
-                path="settings"
-                element={
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">System Settings</h1>
-                    <p className="text-gray-600 mt-2">
-                      Configure system settings.
-                    </p>
-                  </div>
-                }
-              />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="content" element={<ContentModeration />} />
+              <Route path="analytics" element={<Analytics />} />
+              <Route path="settings" element={<SystemCleanup />} />
             </Route>
 
             {/* Root route */}
