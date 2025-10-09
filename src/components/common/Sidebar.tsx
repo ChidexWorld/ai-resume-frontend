@@ -22,6 +22,7 @@ import {
   Zap,
   Target,
   Activity,
+  Database, 
 } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
 
@@ -52,7 +53,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { icon: Award, label: "Voice Assessment", path: "/employee/assessments" },
     { icon: Activity, label: "Skills Analysis", path: "/employee/skills-analysis" },
     { icon: User, label: "Profile", path: "/employee/profile" },
-    { icon: Settings, label: "Settings", path: "/employee/settings" },
+    // { icon: Settings, label: "Settings", path: "/employee/settings" },
   ];
 
   const employerMenuItems = [
