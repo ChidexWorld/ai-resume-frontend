@@ -36,8 +36,14 @@ export interface VoiceAnalysis {
   is_analyzed: boolean;
   analysis_status: string;
   transcription?: string;
-  duration_seconds?: number; // For compatibility, this will map to the backend's duration field
+  duration_seconds?: number; // Duration in seconds
+  // Top-level scores for easy access
   overall_communication_score?: number;
+  clarity_score?: number;
+  confidence_score?: number;
+  fluency_score?: number;
+  pace_score?: number;
+  // Detailed analysis results
   analysis_results?: {
     speech_features?: Record<string, any>;
     communication_analysis?: Record<string, any>;
@@ -54,6 +60,7 @@ export interface VoiceAnalysis {
     emotional_tone?: string;
     communication_summary?: Record<string, any>;
     transcript_stats?: Record<string, any>;
+    summary?: string;
   };
   created_at: string;
   updated_at: string;
@@ -225,11 +232,22 @@ export const employeeService = {
   },
 
   // Voice analysis
-  uploadVoiceAnalysis: async (file: File): Promise<VoiceAnalysis> => {
+  uploadVoiceAnalysis: async (
+    file: File,
+    onProgress?: (progress: number) => void
+  ): Promise<VoiceAnalysis> => {
     const formData = new FormData();
     formData.append("file", file);
     const response = await api.post("/employee/voice/upload", formData, {
       headers: { "Content-Type": "multipart/form-data" },
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.total && onProgress) {
+          const percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          onProgress(percentCompleted);
+        }
+      },
     });
     return response.data;
   },
@@ -355,5 +373,12 @@ export const employeeService = {
   updateSettings: async (settings: any): Promise<any> => {
     const response = await api.put("/employee/settings", settings);
     return response.data;
+  },
+
+  // Assessments (placeholder for future implementation)
+  getAssessments: async (): Promise<any[]> => {
+    // This is a placeholder - the backend endpoint doesn't exist yet
+    // Return empty array for now
+    return [];
   },
 };

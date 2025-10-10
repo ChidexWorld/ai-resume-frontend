@@ -31,7 +31,14 @@ export const AssessmentsPage: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [recordingStream, setRecordingStream] = useState<MediaStream | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'processing' | 'analyzing' | 'complete'>('idle');
+  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
+  const autoStopRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const { data: voiceAnalyses, isLoading: voiceLoading } = useQuery({
     queryKey: ['voice-analyses'],
@@ -43,51 +50,194 @@ export const AssessmentsPage: React.FC = () => {
     queryFn: () => employeeService.getAssessments()
   });
 
+  // Cleanup on unmount
+  React.useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (autoStopRef.current) clearTimeout(autoStopRef.current);
+      if (recordingStream) {
+        recordingStream.getTracks().forEach(track => track.stop());
+      }
+      if (audioUrl) {
+        URL.revokeObjectURL(audioUrl);
+      }
+    };
+  }, [recordingStream, audioUrl]);
+
   const startRecording = async () => {
+    console.log('🎤 Starting recording...');
+
     try {
+      // Check if browser supports getUserMedia
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        toast.error('Your browser does not support audio recording');
+        console.error('getUserMedia not supported');
+        return;
+      }
+
+      console.log('📱 Requesting microphone access...');
+
+      // Request microphone access with simple settings
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
+
+      console.log('✅ Microphone access granted', stream);
+
+      // Check MediaRecorder support
+      if (!window.MediaRecorder) {
+        toast.error('Your browser does not support MediaRecorder');
+        console.error('MediaRecorder not supported');
+        stream.getTracks().forEach(track => track.stop());
+        return;
+      }
+
+      // Try different mime types
+      let options = {};
+      if (MediaRecorder.isTypeSupported('audio/webm')) {
+        options = { mimeType: 'audio/webm' };
+        console.log('🎵 Using audio/webm');
+      } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
+        options = { mimeType: 'audio/ogg' };
+        console.log('🎵 Using audio/ogg');
+      } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+        options = { mimeType: 'audio/mp4' };
+        console.log('🎵 Using audio/mp4');
+      } else {
+        console.log('🎵 Using default mime type');
+      }
+
+      // Create MediaRecorder
+      const recorder = new MediaRecorder(stream, options);
       const chunks: BlobPart[] = [];
 
-      recorder.ondataavailable = (e) => chunks.push(e.data);
+      console.log('📼 MediaRecorder created', recorder.mimeType);
+
+      recorder.ondataavailable = (e) => {
+        console.log('📦 Data available:', e.data.size, 'bytes');
+        if (e.data && e.data.size > 0) {
+          chunks.push(e.data);
+        }
+      };
+
       recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'audio/wav' });
+        console.log('⏹️ Recording stopped. Chunks:', chunks.length);
+
+        if (chunks.length === 0) {
+          console.error('❌ No audio data recorded');
+          toast.error('No audio was recorded. Please try again.');
+          stream.getTracks().forEach(track => track.stop());
+          return;
+        }
+
+        // Create blob
+        const blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+        console.log('💾 Blob created:', blob.size, 'bytes, type:', blob.type);
+
         setAudioBlob(blob);
+
+        // Create URL for playback
+        const url = URL.createObjectURL(blob);
+        console.log('🔗 Blob URL created:', url);
+        setAudioUrl(url);
+
+        // Stop all tracks
+        stream.getTracks().forEach(track => {
+          track.stop();
+          console.log('🛑 Track stopped:', track.kind);
+        });
+        setRecordingStream(null);
+
+        toast.success('Recording completed! You can now play it back.');
+      };
+
+      recorder.onerror = (e: Event) => {
+        console.error('❌ Recording error:', e);
+        toast.error('Recording error occurred');
         stream.getTracks().forEach(track => track.stop());
       };
 
-      recorder.start();
+      recorder.onstart = () => {
+        console.log('▶️ Recording started');
+        toast.success('Recording started - speak now!');
+      };
+
+      // Start recording
+      console.log('🚀 Starting recorder...');
+      recorder.start(1000); // Collect data every second
+
       setMediaRecorder(recorder);
+      setRecordingStream(stream);
       setIsRecording(true);
 
-      // Start timer
-      const timer = setInterval(() => {
-        setRecordingTime(prev => prev + 1);
+      // Reset and start timer
+      let seconds = 0;
+      setRecordingTime(0);
+
+      timerRef.current = setInterval(() => {
+        seconds += 1;
+        setRecordingTime(seconds);
+        console.log('⏱️ Recording time:', seconds, 's');
       }, 1000);
 
       // Auto stop after 5 minutes
-      setTimeout(() => {
+      autoStopRef.current = setTimeout(() => {
+        console.log('⏰ Auto-stop timeout reached');
         if (recorder.state === 'recording') {
-          recorder.stop();
-          setIsRecording(false);
-          clearInterval(timer);
+          stopRecording();
+          toast.success('Recording completed (5 minute limit)');
         }
       }, 300000);
 
-    } catch (error) {
-      toast.error('Failed to access microphone');
+    } catch (error: any) {
+      console.error('❌ Microphone access error:', error);
+
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+        toast.error('Microphone permission denied. Please allow access and try again.');
+      } else if (error.name === 'NotFoundError') {
+        toast.error('No microphone found. Please connect a microphone.');
+      } else {
+        toast.error(`Failed to access microphone: ${error.message || 'Unknown error'}`);
+      }
     }
   };
 
   const stopRecording = () => {
-    if (mediaRecorder && mediaRecorder.state === 'recording') {
-      mediaRecorder.stop();
-      setIsRecording(false);
+    console.log('⏹️ Stopping recording...', {
+      hasRecorder: !!mediaRecorder,
+      recorderState: mediaRecorder?.state
+    });
+
+    if (mediaRecorder) {
+      if (mediaRecorder.state === 'recording') {
+        console.log('🛑 Calling recorder.stop()');
+        mediaRecorder.stop();
+        setIsRecording(false);
+      } else {
+        console.log('⚠️ Recorder not in recording state:', mediaRecorder.state);
+        setIsRecording(false);
+      }
+
+      // Clear timers
+      if (timerRef.current) {
+        console.log('🔄 Clearing timer');
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      if (autoStopRef.current) {
+        console.log('🔄 Clearing auto-stop timeout');
+        clearTimeout(autoStopRef.current);
+        autoStopRef.current = null;
+      }
+    } else {
+      console.error('❌ No media recorder to stop');
     }
   };
 
   const resetRecording = () => {
+    if (audioUrl) {
+      URL.revokeObjectURL(audioUrl);
+    }
     setAudioBlob(null);
+    setAudioUrl(null);
     setRecordingTime(0);
   };
 
@@ -95,13 +245,43 @@ export const AssessmentsPage: React.FC = () => {
     if (!audioBlob) return;
 
     try {
-      const file = new File([audioBlob], 'voice-sample.wav', { type: 'audio/wav' });
-      await employeeService.uploadVoiceAnalysis(file);
-      toast.success('Voice sample uploaded for analysis!');
-      resetRecording();
-      // Refetch voice analyses
-    } catch (error) {
-      toast.error('Failed to upload voice sample');
+      setIsUploading(true);
+      setUploadProgress(0);
+      setUploadStatus('uploading');
+
+      // Determine file extension based on blob type
+      const fileExtension = audioBlob.type.includes('webm') ? 'webm' :
+                           audioBlob.type.includes('mp4') ? 'm4a' : 'wav';
+
+      const file = new File([audioBlob], `voice-sample.${fileExtension}`, { type: audioBlob.type });
+
+      // Upload with progress tracking
+      await employeeService.uploadVoiceAnalysis(file, (progress) => {
+        setUploadProgress(progress);
+        if (progress === 100) {
+          setUploadStatus('processing');
+        }
+      });
+
+      // Simula status updates (since backend doesn't send them yet)
+      setUploadStatus('analyzing');
+      setTimeout(() => {
+        setUploadStatus('complete');
+        toast.success('Voice analysis complete!');
+        resetRecording();
+        setIsUploading(false);
+        setUploadStatus('idle');
+        setUploadProgress(0);
+        // Refetch voice analyses
+        window.location.reload();
+      }, 2000);
+
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      toast.error(error?.response?.data?.detail || 'Failed to upload voice sample');
+      setIsUploading(false);
+      setUploadStatus('idle');
+      setUploadProgress(0);
     }
   };
 
@@ -256,6 +436,22 @@ export const AssessmentsPage: React.FC = () => {
             </p>
 
             <div className="flex flex-col items-center space-y-6">
+              {/* Debug Info */}
+              <div className="w-full max-w-md p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                <p className="text-xs text-blue-800 dark:text-blue-200 mb-2">
+                  <strong>Browser Support:</strong>
+                </p>
+                <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                  <li>• getUserMedia: {navigator.mediaDevices ? '✅ Supported' : '❌ Not supported'}</li>
+                  <li>• MediaRecorder: {window.MediaRecorder ? '✅ Supported' : '❌ Not supported'}</li>
+                  <li>• WebM: {window.MediaRecorder && MediaRecorder.isTypeSupported('audio/webm') ? '✅ Yes' : '❌ No'}</li>
+                  <li>• MP4: {window.MediaRecorder && MediaRecorder.isTypeSupported('audio/mp4') ? '✅ Yes' : '❌ No'}</li>
+                </ul>
+                <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+                  Open browser console (F12) to see detailed logs
+                </p>
+              </div>
+
               {/* Recording Controls */}
               <div className="flex items-center space-x-4">
                 {!isRecording && !audioBlob && (
@@ -278,7 +474,7 @@ export const AssessmentsPage: React.FC = () => {
                   </button>
                 )}
 
-                {audioBlob && (
+                {audioBlob && !isUploading && (
                   <div className="flex items-center space-x-3">
                     <button
                       onClick={resetRecording}
@@ -307,13 +503,81 @@ export const AssessmentsPage: React.FC = () => {
               )}
 
               {/* Audio Playback */}
-              {audioBlob && (
+              {audioBlob && audioUrl && !isUploading && (
                 <div className="w-full max-w-md">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                    Preview your recording:
+                  </p>
                   <audio
                     controls
-                    src={URL.createObjectURL(audioBlob)}
+                    src={audioUrl}
                     className="w-full"
-                  />
+                    preload="metadata"
+                  >
+                    Your browser does not support audio playback.
+                  </audio>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    Duration: {formatTime(recordingTime)}
+                  </p>
+                </div>
+              )}
+
+              {/* Upload Progress */}
+              {isUploading && (
+                <div className="w-full max-w-md space-y-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium text-gray-700 dark:text-gray-300">
+                      {uploadStatus === 'uploading' && 'Uploading voice sample...'}
+                      {uploadStatus === 'processing' && 'Processing audio...'}
+                      {uploadStatus === 'analyzing' && 'Analyzing communication skills...'}
+                      {uploadStatus === 'complete' && 'Analysis complete!'}
+                    </span>
+                    <span className="text-gray-500">
+                      {uploadStatus === 'uploading' ? `${uploadProgress}%` : ''}
+                    </span>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
+                    <div
+                      className="bg-primary-600 h-2.5 rounded-full transition-all duration-300 ease-out"
+                      style={{
+                        width: `${uploadStatus === 'uploading' ? uploadProgress : 100}%`
+                      }}
+                    >
+                      {(uploadStatus === 'processing' || uploadStatus === 'analyzing') && (
+                        <div className="w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Status Icon */}
+                  <div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                    {uploadStatus === 'uploading' && (
+                      <>
+                        <Upload className="w-4 h-4 animate-pulse" />
+                        <span>Uploading file...</span>
+                      </>
+                    )}
+                    {uploadStatus === 'processing' && (
+                      <>
+                        <Volume2 className="w-4 h-4 animate-pulse" />
+                        <span>Transcribing audio...</span>
+                      </>
+                    )}
+                    {uploadStatus === 'analyzing' && (
+                      <>
+                        <Brain className="w-4 h-4 animate-pulse" />
+                        <span>Analyzing speech patterns...</span>
+                      </>
+                    )}
+                    {uploadStatus === 'complete' && (
+                      <>
+                        <Check className="w-4 h-4 text-green-600" />
+                        <span className="text-green-600">Processing complete!</span>
+                      </>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -495,23 +759,29 @@ interface VoiceAnalysisCardProps {
 }
 
 const VoiceAnalysisCard: React.FC<VoiceAnalysisCardProps> = ({ analysis, getScoreColor }) => {
+  const overallScore = analysis.overall_communication_score || 0;
+  const fluencyScore = analysis.fluency_score || 0;
+  const clarityScore = analysis.clarity_score || 0;
+  const confidenceScore = analysis.confidence_score || 0;
+  const paceScore = analysis.pace_score || 0;
+
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="font-semibold text-gray-900">
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100">
             Voice Analysis #{analysis.id}
           </h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
             {format(new Date(analysis.created_at), 'MMMM d, yyyy \'at\' h:mm a')}
           </p>
-          <p className="text-xs text-gray-500">
-            Duration: {analysis.duration_seconds}s
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Duration: {analysis.duration_seconds || 0}s
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getScoreColor(analysis.overall_communication_score)}`}>
-            {analysis.overall_communication_score}% Overall
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getScoreColor(overallScore)}`}>
+            {overallScore}% Overall
           </span>
           <button className="p-1 text-gray-400 hover:text-gray-600">
             <Download className="w-4 h-4" />
@@ -521,26 +791,26 @@ const VoiceAnalysisCard: React.FC<VoiceAnalysisCardProps> = ({ analysis, getScor
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div>
-          <p className="text-xs text-gray-600">Fluency</p>
-          <p className="font-semibold">{analysis.fluency_score}%</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400">Fluency</p>
+          <p className="font-semibold text-gray-900 dark:text-gray-100">{fluencyScore}%</p>
         </div>
         <div>
-          <p className="text-xs text-gray-600">Clarity</p>
-          <p className="font-semibold">{analysis.clarity_score}%</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400">Clarity</p>
+          <p className="font-semibold text-gray-900 dark:text-gray-100">{clarityScore}%</p>
         </div>
         <div>
-          <p className="text-xs text-gray-600">Confidence</p>
-          <p className="font-semibold">{analysis.confidence_score}%</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400">Confidence</p>
+          <p className="font-semibold text-gray-900 dark:text-gray-100">{confidenceScore}%</p>
         </div>
         <div>
-          <p className="text-xs text-gray-600">Pace</p>
-          <p className="font-semibold">{analysis.pace_score}%</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400">Pace</p>
+          <p className="font-semibold text-gray-900 dark:text-gray-100">{paceScore}%</p>
         </div>
       </div>
 
       {analysis.analysis_results && (
         <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-          <p className="text-sm text-gray-700">
+          <p className="text-sm text-gray-700 dark:text-gray-300">
             <strong>Key Insights:</strong> {analysis.analysis_results.summary || 'Analysis completed successfully'}
           </p>
         </div>
